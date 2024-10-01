@@ -34,10 +34,8 @@ exports.getMeTeacher = async (req, res) => {
     const token = sign({
       id: teacher._id,
       role: teacher.role,
-      date: new Date(),
       username: teacher.username,
       createdAt: teacher.createdAt,
-      updatedAt: teacher.updatedAt,
     });
     return res.status(200).json({ data: token });
   } catch (error) {
@@ -130,10 +128,8 @@ exports.loginTeacher = async (req, res) => {
     const token = sign({
       id: teacher._id,
       role: teacher.role,
-      date: new Date(),
       username: teacher.username,
       createdAt: teacher.createdAt,
-      updatedAt: teacher.updatedAt,
     });
     return res.status(200).json({ data: token });
   } catch (error) {

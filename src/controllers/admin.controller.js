@@ -32,14 +32,18 @@ exports.getMeAdmin = async (req, res) => {
       });
     }
     const token = sign({
-      id: admin._id,
       role: admin.role,
-      date: new Date(),
+      id: admin._id.toString(),
       username: admin.username,
       createdAt: admin.createdAt,
-      updatedAt: admin.updatedAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: admin.role,
+        username: admin.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -128,14 +132,18 @@ exports.loginAdmin = async (req, res) => {
       });
     }
     const token = sign({
-      id: admin._id,
       role: admin.role,
-      date: new Date(),
+      id: admin._id.toString(),
       username: admin.username,
       createdAt: admin.createdAt,
-      updatedAt: admin.updatedAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: admin.role,
+        username: admin.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",

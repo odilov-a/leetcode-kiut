@@ -34,10 +34,8 @@ exports.getMeStudent = async (req, res) => {
     const token = sign({
       id: student._id,
       role: student.role,
-      date: new Date(),
       username: student.username,
       createdAt: student.createdAt,
-      updatedAt: student.updatedAt,
     });
     return res.status(200).json({ data: token });
   } catch (error) {
@@ -144,12 +142,10 @@ exports.loginStudent = async (req, res) => {
       });
     }
     const token = sign({
-      id: student._id,
+      id: student._id.toString(),
       role: student.role,
-      date: new Date(),
       username: student.username,
       createdAt: student.createdAt,
-      updatedAt: student.updatedAt,
     });
     return res.status(200).json({ data: token });
   } catch (error) {
