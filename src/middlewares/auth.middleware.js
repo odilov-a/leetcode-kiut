@@ -15,10 +15,13 @@ exports.authenticate = (req, res, next) => {
   try {
     const decoded = verify(token);
     if (decoded.role === "admin") {
+      console.log("admin", { decoded });
       req.admin = decoded;
     } else if (decoded.role === "student") {
+      console.log("student", { decoded });
       req.student = decoded;
     } else if (decoded.role === "teacher") {
+      console.log("teacher", { decoded });
       req.teacher = decoded;
     } else {
       return res.status(403).json({
