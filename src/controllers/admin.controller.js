@@ -10,9 +10,7 @@ exports.getAllAdmins = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -32,8 +30,8 @@ exports.getMeAdmin = async (req, res) => {
       });
     }
     const token = sign({
+      id: admin._id,
       role: admin.role,
-      id: admin._id.toString(),
       username: admin.username,
       createdAt: admin.createdAt,
     });
@@ -48,9 +46,7 @@ exports.getMeAdmin = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -75,9 +71,7 @@ exports.getAdminById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -98,9 +92,7 @@ exports.registerAdmin = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -132,8 +124,8 @@ exports.loginAdmin = async (req, res) => {
       });
     }
     const token = sign({
+      id: admin._id,
       role: admin.role,
-      id: admin._id.toString(),
       username: admin.username,
       createdAt: admin.createdAt,
     });
@@ -148,9 +140,7 @@ exports.loginAdmin = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -178,9 +168,7 @@ exports.updateAdmin = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -205,9 +193,7 @@ exports.deleteAdmin = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }

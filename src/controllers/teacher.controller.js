@@ -10,9 +10,7 @@ exports.getAllTeachers = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -42,9 +40,7 @@ exports.getMeTeacher = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -69,9 +65,7 @@ exports.getTeacherById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -92,9 +86,7 @@ exports.registerTeacher = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -136,9 +128,7 @@ exports.loginTeacher = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -167,9 +157,7 @@ exports.updateTeacher = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -195,9 +183,7 @@ exports.deleteTeacher = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }

@@ -11,9 +11,7 @@ exports.getFiles = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -65,9 +63,7 @@ exports.upload = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -93,9 +89,7 @@ exports.deleteFile = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }

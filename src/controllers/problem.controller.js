@@ -11,9 +11,7 @@ exports.getAllProblems = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -40,9 +38,7 @@ exports.getProblemById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -59,9 +55,7 @@ exports.getAllProblemsByDifficulty = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -78,9 +72,7 @@ exports.getAllProblemsBySubject = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -107,9 +99,7 @@ exports.searchProblems = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -126,9 +116,7 @@ exports.getProblemsBySubjectAndDifficulty = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -180,9 +168,7 @@ exports.submitAnswer = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -197,9 +183,7 @@ exports.createProblem = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -224,9 +208,7 @@ exports.updateProblem = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -251,9 +233,7 @@ exports.deleteProblem = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }

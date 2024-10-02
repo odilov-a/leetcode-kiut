@@ -10,9 +10,7 @@ exports.getAllStudents = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -42,9 +40,7 @@ exports.getMeStudent = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -69,9 +65,7 @@ exports.getStudentById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -85,9 +79,7 @@ exports.getTopStudentsByBalance = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -108,9 +100,7 @@ exports.registerStudent = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -152,9 +142,7 @@ exports.loginStudent = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -183,9 +171,7 @@ exports.updateStudent = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -211,9 +197,7 @@ exports.deleteStudent = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
@@ -227,9 +211,7 @@ exports.deleteAllStudents = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: "Server xatosi",
-        ru: "Ошибка сервера",
-        en: "Server error",
+        uz: error.message,
       },
     });
   }
