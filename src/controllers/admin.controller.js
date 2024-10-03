@@ -30,7 +30,7 @@ exports.getMeAdmin = async (req, res) => {
       });
     }
     const token = sign({
-      id: admin._id.toString(),
+      id: admin._id,
       role: admin.role,
       username: admin.username,
       createdAt: admin.createdAt,
@@ -124,7 +124,7 @@ exports.loginAdmin = async (req, res) => {
       });
     }
     const token = sign({
-      id: admin._id.toString(),
+      id: admin._id,
       role: admin.role,
       username: admin.username,
       createdAt: admin.createdAt,
