@@ -25,18 +25,15 @@ exports.getAllDifficulties = async (req, res) => {
     }
     const difficulties = await Difficulty.find();
     const result = difficulties.map((difficulty) => {
-      if (fieldName) {
-        return {
-          id: difficulty._id,
-          titleUz: difficulty.titleUz,
-          titleRu: difficulty.titleRu,
-          titleEn: difficulty.titleEn,
-          title: difficulty[fieldName],
-        };
-      }
-      return difficulty;
+      return {
+        _id: difficulty._id,
+        titleUz: difficulty.titleUz,
+        titleRu: difficulty.titleRu,
+        titleEn: difficulty.titleEn,
+        title: fieldName ? difficulty[fieldName] : undefined,
+      };
     });
-    return res.status(200).json({ data: result });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -51,7 +48,6 @@ exports.getAllDifficulties = async (req, res) => {
 
 exports.getDifficultyById = async (req, res) => {
   try {
-    const { id } = req.params;
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
@@ -64,7 +60,7 @@ exports.getDifficultyById = async (req, res) => {
         },
       });
     }
-    const difficulty = await Difficulty.findById(id);
+    const difficulty = await Difficulty.findById(req.params.id);
     if (!difficulty) {
       return res.status(404).json({
         status: "error",
@@ -76,13 +72,13 @@ exports.getDifficultyById = async (req, res) => {
       });
     }
     const result = {
-      id: difficulty._id,
+      _id: difficulty._id,
       titleUz: difficulty.titleUz,
       titleRu: difficulty.titleRu,
       titleEn: difficulty.titleEn,
-      title: difficulty[fieldName],
+      title: fieldName ? difficulty[fieldName] : undefined,
     };
-    return res.status(200).json({ data: result });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -108,7 +104,7 @@ exports.createDifficulty = async (req, res) => {
         },
       });
     }
-    const difficulty = Difficulty.create(req.body);
+    const difficulty = await Difficulty.create({ ...req.body });
     return res.status(201).json({ data: difficulty });
   } catch (error) {
     return res.status(500).json({
@@ -124,11 +120,11 @@ exports.createDifficulty = async (req, res) => {
 
 exports.updateDifficulty = async (req, res) => {
   try {
-    const { id } = req.params;
-    const difficulty = await Difficulty.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const difficulty = await Difficulty.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
     if (!difficulty) {
       return res.status(404).json({
         status: "error",
@@ -139,7 +135,7 @@ exports.updateDifficulty = async (req, res) => {
         },
       });
     }
-    return res.status(200).json({ data: difficulty });
+    return res.json({ data: difficulty });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -154,8 +150,7 @@ exports.updateDifficulty = async (req, res) => {
 
 exports.deleteDifficulty = async (req, res) => {
   try {
-    const { id } = req.params;
-    const difficulty = await Difficulty.findByIdAndDelete(id);
+    const difficulty = await Difficulty.findByIdAndDelete(req.params.id);
     if (!difficulty) {
       return res.status(404).json({
         status: "error",
@@ -166,7 +161,7 @@ exports.deleteDifficulty = async (req, res) => {
         },
       });
     }
-    return res.status(200).json({
+    return res.json({
       status: "success",
       message: {
         uz: "Daraja o'chirildi",

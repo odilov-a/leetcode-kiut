@@ -25,18 +25,15 @@ exports.getAllSubjects = async (req, res) => {
     }
     const subjects = await Subject.find();
     const result = subjects.map((subject) => {
-      if (fieldName) {
-        return {
-          id: subject._id,
-          titleUz: subject.titleUz,
-          titleRu: subject.titleRu,
-          titleEn: subject.titleEn,
-          title: subject[fieldName],
-        };
-      }
-      return subject;
+      return {
+        _id: subject._id,
+        titleUz: subject.titleUz,
+        titleRu: subject.titleRu,
+        titleEn: subject.titleEn,
+        title: fieldName ? subject[fieldName] : undefined,
+      };
     });
-    return res.status(200).json({ data: result });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -51,7 +48,6 @@ exports.getAllSubjects = async (req, res) => {
 
 exports.getSubjectById = async (req, res) => {
   try {
-    const { id } = req.params;
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
@@ -64,7 +60,7 @@ exports.getSubjectById = async (req, res) => {
         },
       });
     }
-    const subject = await Subject.findById(id);
+    const subject = await Subject.findById(req.params.id);
     if (!subject) {
       return res.status(404).json({
         status: "error",
@@ -76,13 +72,13 @@ exports.getSubjectById = async (req, res) => {
       });
     }
     const result = {
-      id: subject._id,
+      _id: subject._id,
       titleUz: subject.titleUz,
       titleRu: subject.titleRu,
       titleEn: subject.titleEn,
-      title: subject[fieldName],
+      title: fieldName ? subject[fieldName] : undefined,
     };
-    return res.status(200).json({ data: result });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -108,7 +104,7 @@ exports.createSubject = async (req, res) => {
         },
       });
     }
-    const subject = await Subject.create(req.body);
+    const subject = await Subject.create({ ...req.body });
     return res.status(201).json({ data: subject });
   } catch (error) {
     return res.status(500).json({
@@ -124,11 +120,11 @@ exports.createSubject = async (req, res) => {
 
 exports.updateSubject = async (req, res) => {
   try {
-    const { id } = req.params;
-    const subject = await Subject.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const subject = await Subject.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
     if (!subject) {
       return res.status(404).json({
         status: "error",
@@ -154,8 +150,7 @@ exports.updateSubject = async (req, res) => {
 
 exports.deleteSubject = async (req, res) => {
   try {
-    const { id } = req.params;
-    const subject = await Subject.findByIdAndDelete(id);
+    const subject = await Subject.findByIdAndDelete(req.params.id);
     if (!subject) {
       return res.status(404).json({
         status: "error",
@@ -166,35 +161,12 @@ exports.deleteSubject = async (req, res) => {
         },
       });
     }
-    return res.status(200).json({
+    return res.json({
       status: "success",
       message: {
         uz: "Fan o'chirildi",
         ru: "Предмет удален",
         en: "Subject deleted",
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
-  }
-};
-
-exports.deleteAllSubjects = async (req, res) => {
-  try {
-    await Subject.deleteMany();
-    return res.status(200).json({
-      status: "success",
-      message: {
-        uz: "Barcha fanlar o'chirildi",
-        ru: "Все предметы удалены",
-        en: "All subjects deleted",
       },
     });
   } catch (error) {
