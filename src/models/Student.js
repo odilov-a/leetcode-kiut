@@ -9,9 +9,6 @@ const studentSchema = new Schema(
       type: String,
       required: true,
     },
-    birthDate: {
-      type: Number,
-    },
     password: {
       type: String,
       required: true,

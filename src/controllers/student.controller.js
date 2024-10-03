@@ -202,17 +202,3 @@ exports.deleteStudent = async (req, res) => {
     });
   }
 };
-
-exports.deleteAllStudents = async (req, res) => {
-  try {
-    await Student.deleteMany();
-    return res.json({ data: [] });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
-  }
-};

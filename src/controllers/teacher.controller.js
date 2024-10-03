@@ -2,15 +2,53 @@ const bcrypt = require("bcrypt");
 const Teacher = require("../models/Teacher.js");
 const { sign } = require("../utils/jwt.js");
 
+function getLanguageField(lang) {
+  const langFieldMap = {
+    uz: "titleUz",
+    ru: "titleRu",
+    en: "titleEn",
+  };
+  return langFieldMap[lang];
+}
+
 exports.getAllTeachers = async (req, res) => {
   try {
+    const { lang } = req.query;
+    const fieldName = getLanguageField(lang);
+    if (lang && !fieldName) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
     const teachers = await Teacher.find().populate("subject");
-    return res.json({ data: teachers });
+    const result = teachers.map((teacher) => {
+      const modifiedSubjects = teacher.subject.map((subject) => {
+        return {
+          _id: subject._id,
+          titleUz: subject.titleUz,
+          titleRu: subject.titleRu,
+          titleEn: subject.titleEn,
+          title: fieldName ? subject[fieldName] : undefined,
+        };
+      });
+      return {
+        ...teacher._doc,
+        subject: modifiedSubjects,
+      };
+    });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: error.message,
+        uz: "Xatolik sodir bo'ldi",
+        ru: "Произошла ошибка",
+        en: "An error occurred",
       },
     });
   }
