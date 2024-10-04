@@ -1,5 +1,9 @@
+const fs = require("fs");
+const path = require("path");
+const { exec } = require("child_process");
 const Problem = require("../models/Problem.js");
 const Student = require("../models/Student.js");
+const { getTranslation } = require("../helpers/helper.js");
 
 exports.getAllProblems = async (req, res) => {
   try {
@@ -122,54 +126,124 @@ exports.getProblemsBySubjectAndDifficulty = async (req, res) => {
   }
 };
 
-exports.submitAnswer = async (req, res) => {
+exports.getAllProblemsByTeacher = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { answer } = req.body;
-    const problem = await Problem.findById(id);
-    if (!problem) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Masala topilmadi",
-          ru: "Задача не найдена",
-          en: "Problem not found",
-        },
-      });
-    }
-    if (problem.answer === answer) {
-      const student = await Student.findById(req.user.id);
-      if (!student) {
-        return res.status(404).json({
-          status: "error",
-          message: {
-            uz: "Talaba topilmadi",
-            ru: "Студент не найден",
-            en: "Student not found",
-          },
-        });
-      }
-      student.balance += problem.point;
-      await student.save();
-      return res.json({
-        data: {
-          correct: true,
-          balance: student.balance,
-        },
-      });
-    } else {
-      return res.json({
-        data: {
-          correct: false,
-        },
-      });
-    }
+    const { teacher } = req.params;
+    const problems = await Problem.find({ teacher })
+      .populate("subject")
+      .populate("difficulty");
+    return res.json({ data: problems });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
       },
+    });
+  }
+};
+
+exports.checkSolution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code, language } = req.body;
+    const problem = await Problem.findById(id);
+
+    if (!problem) {
+      return res.status(404).json({
+        status: "error",
+        message: getTranslation("problemNotFound", req.language),
+      });
+    }
+
+    const timestamp = Date.now();
+    let fileName, command;
+
+    // Determine file name and command based on language
+    switch (language.toLowerCase()) {
+      case "python":
+        fileName = `${timestamp}.py`;
+        command = `python ./src/tests/${fileName}`;
+        break;
+      case "java":
+        fileName = `${timestamp}.java`;
+        command = `javac ./src/tests/${fileName} && java -cp ./src/tests ${timestamp}`;
+        break;
+      case "javascript":
+        fileName = `${timestamp}.js`;
+        command = `node ./src/tests/${fileName}`;
+        break;
+      default:
+        return res.status(400).json({
+          status: "error",
+          message: getTranslation("invalidLanguage", req.language),
+        });
+    }
+
+    const filePath = path.join(__dirname, "../tests", fileName);
+    const outputFilePath = path.join(
+      __dirname,
+      "../tests",
+      `${timestamp}_output.txt`
+    );
+
+    // Write the student's code to the file
+    fs.writeFileSync(filePath, code, { encoding: "utf8" });
+
+    exec(`${command} >> ${outputFilePath}`, async (error, stdout, stderr) => {
+      if (error) {
+        return res.status(500).json({
+          status: "error",
+          message: getTranslation("executionError", req.language),
+          details: stderr,
+        });
+      }
+
+      // Sanitize student output to remove ANSI escape codes
+      function sanitizeOutput(output) {
+        return output.replace(/[\u001b][[0-?9;]*[mG]/g, "").trim();
+      }
+
+      // Inside your exec callback
+      const studentOutput = sanitizeOutput(
+        fs.readFileSync(outputFilePath, { encoding: "utf8" })
+      );
+      for (let testCase of problem.testCases) {
+        if (studentOutput !== testCase.expectedOutput.trim()) {
+          // Clean up files
+          fs.unlinkSync(filePath);
+          fs.unlinkSync(outputFilePath);
+
+          return res.json({
+            data: {
+              correct: false,
+              expectedOutput: testCase.expectedOutput,
+              studentOutput: studentOutput,
+            },
+          });
+        }
+      }
+
+      // All test cases passed, update balance
+      const student = await Student.findById(req.user.id);
+      student.balance += problem.point;
+      await student.save();
+
+      // Clean up files
+      fs.unlinkSync(filePath);
+      fs.unlinkSync(outputFilePath);
+
+      return res.json({
+        data: {
+          correct: true,
+          balance: student.balance,
+        },
+      });
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: getTranslation(error.message, req.language),
     });
   }
 };

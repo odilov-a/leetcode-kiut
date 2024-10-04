@@ -23,10 +23,10 @@ const studentSchema = new Schema(
       default: 0,
     },
     phoneNumber: {
-      type: Number,
+      type: String,
       unique: true,
       required: true,
-    },
+    },    
     photoUrl: [
       {
         type: String,

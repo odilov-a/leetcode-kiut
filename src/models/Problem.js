@@ -29,22 +29,24 @@ const problemSchema = new Schema(
       type: Number,
       required: true,
     },
-    answer: {
-      type: String,
-      required: true,
-    },
+    tutorials: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     testCases: [
       {
         input: {
           type: String,
           required: true,
         },
-        output: {
+        expectedOutput: {
           type: String,
           required: true,
         },
       },
-    ],
+    ],    
     timeLimit: {
       type: Number,
       required: true,
