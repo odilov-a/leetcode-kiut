@@ -17,7 +17,7 @@ const translations = {
 };
 
 function getTranslation(key, language) {
-  return translations[language][key] || translations["en"][key];
+  return translations[language]?.[key] || translations["en"][key];
 }
 
 module.exports = { getTranslation };
