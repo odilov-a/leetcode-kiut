@@ -5,14 +5,30 @@ const Problem = require("../models/Problem.js");
 const Student = require("../models/Student.js");
 const { getTranslation } = require("../helpers/helper.js");
 
-const getLanguageField = (lang) => {
-  switch (lang) {
-    case "uz":
-      return "titleUz";
-    case "ru":
-      return "titleRu";
-    case "en":
-      return "titleEn";
+const getLanguageField = (lang, type) => {
+  switch (type) {
+    case "title":
+      switch (lang) {
+        case "uz":
+          return "titleUz";
+        case "ru":
+          return "titleRu";
+        case "en":
+          return "titleEn";
+        default:
+          return null;
+      }
+    case "description":
+      switch (lang) {
+        case "uz":
+          return "descriptionUz";
+        case "ru":
+          return "descriptionRu";
+        case "en":
+          return "descriptionEn";
+        default:
+          return null;
+      }
     default:
       return null;
   }
@@ -21,8 +37,9 @@ const getLanguageField = (lang) => {
 exports.getAllProblems = async (req, res) => {
   try {
     const { lang } = req.query;
-    const fieldName = getLanguageField(lang);
-    if (lang && !fieldName) {
+    const titleFieldName = getLanguageField(lang, "title");
+    const descriptionFieldName = getLanguageField(lang, "description");
+    if (lang && (!titleFieldName || !descriptionFieldName)) {
       return res.status(400).json({
         status: "error",
         message: {
@@ -36,21 +53,25 @@ exports.getAllProblems = async (req, res) => {
       .populate("subject")
       .populate("difficulty");
     const result = problems.map((problem) => {
-      const subjectTitle = fieldName
-        ? problem.subject[fieldName]
+      const subjectTitle = titleFieldName
+        ? problem.subject[titleFieldName]
         : problem.subject.titleEn;
-      const difficultyTitle = fieldName
-        ? problem.difficulty[fieldName]
+
+      const difficultyTitle = titleFieldName
+        ? problem.difficulty[titleFieldName]
         : problem.difficulty.titleEn;
       return {
         _id: problem._id,
         titleUz: problem.titleUz,
         titleRu: problem.titleRu,
         titleEn: problem.titleEn,
-        title: fieldName ? problem[fieldName] : problem.titleEn,
+        title: titleFieldName ? problem[titleFieldName] : problem.titleEn,
         descriptionUz: problem.descriptionUz,
         descriptionRu: problem.descriptionRu,
         descriptionEn: problem.descriptionEn,
+        description: descriptionFieldName
+          ? problem[descriptionFieldName]
+          : problem.descriptionEn,
         point: problem.point,
         tutorials: problem.tutorials,
         testCases: problem.testCases,
