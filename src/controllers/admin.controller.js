@@ -38,7 +38,7 @@ exports.getMeAdmin = async (req, res) => {
       data: {
         token,
         role: admin.role,
-        username: admin.username
+        username: admin.username,
       },
     });
   } catch (error) {
@@ -147,12 +147,27 @@ exports.loginAdmin = async (req, res) => {
 
 exports.updateAdmin = async (req, res) => {
   try {
-    const { id } = req.headers;
-    const admin = await Admin.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!admin) {
+    const { username, password } = req.body;
+    if (!username) {
+      return res.status(400).json({
+        message: {
+          uz: "Foydalanuvchi nomi kiritilmagan",
+          ru: "Имя пользователя не введено",
+          en: "Username not entered",
+        },
+      });
+    }
+    const updateData = { username };
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+    if (!updatedAdmin) {
       return res.status(404).json({
         status: "error",
         message: {
@@ -162,14 +177,9 @@ exports.updateAdmin = async (req, res) => {
         },
       });
     }
-    return res.status(200).json({ data: admin });
+    return res.json({ message: "Admin updated successfully" });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 

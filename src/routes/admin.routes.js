@@ -8,7 +8,7 @@ adminRouter.post("/login", adminController.loginAdmin);
 adminRouter.get("/", authenticate, adminController.getAllAdmins);
 adminRouter.get("/me", authenticate, adminController.getMeAdmin);
 adminRouter.get("/:id", authenticate, adminController.getAdminById);
-adminRouter.put("/update-admin", authenticate, adminController.updateAdmin);
+adminRouter.put("/:id", authenticate, adminController.updateAdmin);
 adminRouter.delete("/:id", authenticate, adminController.deleteAdmin);
 
 module.exports = adminRouter;
