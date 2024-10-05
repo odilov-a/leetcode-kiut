@@ -30,7 +30,6 @@ exports.getMeAdmin = async (req, res) => {
       });
     }
     const token = sign({
-      id: admin._id,
       role: admin.role,
       username: admin.username,
       createdAt: admin.createdAt,
@@ -39,7 +38,7 @@ exports.getMeAdmin = async (req, res) => {
       data: {
         token,
         role: admin.role,
-        username: admin.username,
+        username: admin.username
       },
     });
   } catch (error) {
@@ -148,7 +147,7 @@ exports.loginAdmin = async (req, res) => {
 
 exports.updateAdmin = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.headers;
     const admin = await Admin.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
