@@ -4,6 +4,7 @@ const { authenticate } = require("../middlewares/auth.middleware.js");
 const subjectRouter = Router();
 
 subjectRouter.get("/", subjectController.getAllSubjects);
+subjectRouter.get("/teacher/:id", subjectController.getAllSubjectsByTeacher);
 subjectRouter.get("/:id", subjectController.getSubjectById);
 subjectRouter.post("/", authenticate, subjectController.createSubject);
 subjectRouter.put("/:id", authenticate, subjectController.updateSubject);

@@ -2,14 +2,18 @@ const bcrypt = require("bcrypt");
 const Teacher = require("../models/Teacher.js");
 const { sign } = require("../utils/jwt.js");
 
-function getLanguageField(lang) {
-  const langFieldMap = {
-    uz: "titleUz",
-    ru: "titleRu",
-    en: "titleEn",
-  };
-  return langFieldMap[lang];
-}
+const getLanguageField = (lang) => {
+  switch (lang) {
+    case "uz":
+      return "titleUz";
+    case "ru":
+      return "titleRu";
+    case "en":
+      return "titleEn";
+    default:
+      return null;
+  }
+};
 
 exports.getAllTeachers = async (req, res) => {
   try {

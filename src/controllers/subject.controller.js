@@ -1,13 +1,17 @@
 const Subject = require("../models/Subject.js");
 
-function getLanguageField(lang) {
-  const langFieldMap = {
-    uz: "titleUz",
-    ru: "titleRu",
-    en: "titleEn",
-  };
-  return langFieldMap[lang];
-}
+const getLanguageField = (lang) => {
+  switch (lang) {
+    case "uz":
+      return "titleUz";
+    case "ru":
+      return "titleRu";
+    case "en":
+      return "titleEn";
+    default:
+      return null;
+  }
+};
 
 exports.getAllSubjects = async (req, res) => {
   try {
@@ -78,6 +82,43 @@ exports.getSubjectById = async (req, res) => {
       titleEn: subject.titleEn,
       title: fieldName ? subject[fieldName] : undefined,
     };
+    return res.json({ data: result });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: "Xatolik sodir bo'ldi",
+        ru: "Произошла ошибка",
+        en: "An error occurred",
+      },
+    });
+  }
+};
+
+exports.getAllSubjectsByTeacher = async (req, res) => {
+  try {
+    const { lang } = req.query;
+    const fieldName = getLanguageField(lang);
+    if (lang && !fieldName) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
+    const subjects = await Subject.find({ teacher: req.params.id });
+    const result = subjects.map((subject) => {
+      return {
+        _id: subject._id,
+        titleUz: subject.titleUz,
+        titleRu: subject.titleRu,
+        titleEn: subject.titleEn,
+        title: fieldName ? subject[fieldName] : undefined,
+      };
+    });
     return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({

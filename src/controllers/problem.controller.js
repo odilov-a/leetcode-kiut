@@ -5,17 +5,75 @@ const Problem = require("../models/Problem.js");
 const Student = require("../models/Student.js");
 const { getTranslation } = require("../helpers/helper.js");
 
+const getLanguageField = (lang) => {
+  switch (lang) {
+    case "uz":
+      return "titleUz";
+    case "ru":
+      return "titleRu";
+    case "en":
+      return "titleEn";
+    default:
+      return null;
+  }
+};
+
 exports.getAllProblems = async (req, res) => {
   try {
+    const { lang } = req.query;
+    const fieldName = getLanguageField(lang);
+    if (lang && !fieldName) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
     const problems = await Problem.find()
       .populate("subject")
       .populate("difficulty");
-    return res.json({ data: problems });
+    const result = problems.map((problem) => {
+      const subjectTitle = fieldName
+        ? problem.subject[fieldName]
+        : problem.subject.titleEn;
+      const difficultyTitle = fieldName
+        ? problem.difficulty[fieldName]
+        : problem.difficulty.titleEn;
+      return {
+        _id: problem._id,
+        titleUz: problem.titleUz,
+        titleRu: problem.titleRu,
+        titleEn: problem.titleEn,
+        title: fieldName ? problem[fieldName] : problem.titleEn,
+        descriptionUz: problem.descriptionUz,
+        descriptionRu: problem.descriptionRu,
+        descriptionEn: problem.descriptionEn,
+        point: problem.point,
+        tutorials: problem.tutorials,
+        testCases: problem.testCases,
+        timeLimit: problem.timeLimit,
+        memoryLimit: problem.memoryLimit,
+        subject: {
+          _id: problem.subject._id,
+          title: subjectTitle,
+        },
+        difficulty: {
+          _id: problem.difficulty._id,
+          title: difficultyTitle,
+        },
+      };
+    });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: error.message,
+        uz: "Xatolik sodir bo'ldi",
+        ru: "Произошла ошибка",
+        en: "An error occurred",
       },
     });
   }
