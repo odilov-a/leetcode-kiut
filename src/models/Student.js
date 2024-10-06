@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, Types, model } = require("mongoose");
 const studentSchema = new Schema(
   {
     firstName: {
@@ -30,6 +30,12 @@ const studentSchema = new Schema(
     photoUrl: [
       {
         type: String,
+      },
+    ],
+    history: [
+      {
+        type: Types.ObjectId,
+        ref: "problems",
       },
     ],
     role: {
