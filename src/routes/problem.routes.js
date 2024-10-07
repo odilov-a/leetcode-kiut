@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const problemController = require("../controllers/problem.controller.js");
+const solutionController = require("../controllers/solution.controller.js");
 const { authenticate } = require("../middlewares/auth.middleware.js");
 const problemRouter = Router();
 
@@ -13,6 +14,6 @@ problemRouter.get("/teacher/:teacher", authenticate, problemController.getAllPro
 problemRouter.post("/", authenticate, problemController.createProblem);
 problemRouter.put("/:id", authenticate, problemController.updateProblem);
 problemRouter.delete("/:id", authenticate, problemController.deleteProblem);
-problemRouter.post("/:id/submit", authenticate, problemController.checkSolution);
+problemRouter.post("/:id/submit", authenticate, solutionController.checkSolution);
 
 module.exports = problemRouter;
