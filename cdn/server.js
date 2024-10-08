@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
+app.use("/tests", express.static("tests"));
 app.get("/", (req, res) => {
   return res.json({ message: "Server is run!" });
 });

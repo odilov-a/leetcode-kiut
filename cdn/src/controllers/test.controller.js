@@ -1,12 +1,12 @@
 const path = require("path");
 const multer = require("multer");
-const Files = require("../models/File.js");
+const Test = require("../models/Test.js");
 const mongoose = require("mongoose");
 
-exports.getFiles = async (req, res) => {
+exports.getTest = async (req, res) => {
   try {
-    const files = await Files.find();
-    return res.status(200).json({ data: files });
+    const tests = await Test.find();
+    return res.status(200).json({ data: tests });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -19,7 +19,7 @@ exports.getFiles = async (req, res) => {
 
 exports.upload = async (req, res) => {
   try {
-    const publicFolderPath = `./uploads`;
+    const publicFolderPath = `./tests`;
     const storage = multer.diskStorage({
       destination: publicFolderPath,
       filename: (req, file, cb) => {
@@ -46,7 +46,7 @@ exports.upload = async (req, res) => {
       }
       const newFile = new Files({
         fileName: req.file.filename,
-        fileUrl: `http://localhost:5001/uploads/${req.file.filename}`,
+        fileUrl: `http://localhost:5001/tests/${req.file.filename}`,
       });
       await newFile.save();
       return res.status(200).json({ data: newFile });
@@ -62,9 +62,9 @@ exports.upload = async (req, res) => {
   }
 };
 
-exports.deleteFile = async (req, res) => {
+exports.deleteTest = async (req, res) => {
   try {
-    const file = await Files.findById(req.params.id);
+    const file = await Test.findById(req.params.id);
     if (!file) {
       return res.status(404).json({
         status: "error",
