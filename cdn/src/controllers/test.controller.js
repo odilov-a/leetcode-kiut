@@ -44,7 +44,7 @@ exports.upload = async (req, res) => {
           },
         });
       }
-      const newFile = new Files({
+      const newFile = new Test({
         fileName: req.file.filename,
         fileUrl: `http://localhost:5001/tests/${req.file.filename}`,
       });
