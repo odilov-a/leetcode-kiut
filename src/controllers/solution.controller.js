@@ -48,6 +48,18 @@ exports.checkSolution = async (req, res) => {
         message: "Problem not found",
       });
     }
+    const existingSolution = await Solution.findOne({
+      studentId: req.student.id,
+      problemId: problem._id,
+    });
+    if (existingSolution) {
+      if (existingSolution.isCorrect) {
+        return res.status(400).json({
+          status: "error",
+          message: "This problem was solved",
+        });
+      }
+    }
     const timestamp = Date.now();
     let fileName, command;
     switch (language.toLowerCase()) {
@@ -56,12 +68,21 @@ exports.checkSolution = async (req, res) => {
         command = `python ${path.join(__dirname, "../tests", fileName)}`;
         break;
       case "java":
-        fileName = `${timestamp}.java`;
+        fileName = `Solution.java`;
+        const updatedJavaCode = code.replace(
+          /public\s+class\s+\w+/g,
+          "public class Solution"
+        );
+        fs.writeFileSync(
+          path.join(__dirname, "../tests", fileName),
+          updatedJavaCode,
+          { encoding: "utf8" }
+        );
         command = `javac ${path.join(
           __dirname,
           "../tests",
           fileName
-        )} && java -cp ${path.join(__dirname, "../tests")} ${timestamp}`;
+        )} && java -cp ${path.join(__dirname, "../tests")} Solution`;
         break;
       case "javascript":
         fileName = `${timestamp}.js`;
@@ -73,34 +94,48 @@ exports.checkSolution = async (req, res) => {
           message: "Invalid language",
         });
     }
-    const filePath = path.join(__dirname, "../tests", fileName);
-    fs.writeFileSync(filePath, code, { encoding: "utf8" });
     const testResults = [];
-    for (let testCase of problem.testCases) {
-      const { input, output: expectedOutput } = testCase;
-      const result = await new Promise((resolve) => {
+    const stripAnsi = (str) => str.replace(/\x1b\[[0-9;]*m/g, "").trim();
+    const executeCode = async (fileName, command, input, expectedOutput) => {
+      const filePath = path.join(__dirname, "../tests", fileName);
+      fs.writeFileSync(filePath, code, { encoding: "utf8" });
+      return new Promise((resolve) => {
         exec(command, { input }, (error, stdout, stderr) => {
-          const actualOutput = stdout.trim();
+          const actualOutput = stripAnsi(stdout);
           const isCorrect = actualOutput === expectedOutput.trim();
           resolve({
-            input,
-            expected: expectedOutput,
-            actual: actualOutput,
+            actualOutput,
             isCorrect,
-            error,
+            error: error ? stripAnsi(stderr) : null,
           });
         });
       });
+    };
+    for (let testCase of problem.testCases) {
+      const { input, output: expectedOutput } = testCase;
+      const result = await executeCode(
+        fileName,
+        command,
+        input,
+        expectedOutput
+      );
+      result.expected = expectedOutput;
+      result.input = input;
       testResults.push(result);
     }
     const allCorrect = testResults.every((result) => result.isCorrect);
-    const solution = new Solution({
-      studentId: req.student.id,
-      problemId: problem._id,
-      code,
-      isCorrect: allCorrect,
-    });
-    await solution.save();
+    if (existingSolution) {
+      existingSolution.isCorrect = allCorrect;
+      await existingSolution.save();
+    } else {
+      const solution = new Solution({
+        studentId: req.student.id,
+        problemId: problem._id,
+        code,
+        isCorrect: allCorrect,
+      });
+      await solution.save();
+    }
     if (!allCorrect) {
       const incorrectTestCase = testResults.find((result) => !result.isCorrect);
       return res.json({
@@ -108,7 +143,8 @@ exports.checkSolution = async (req, res) => {
           correct: false,
           input: incorrectTestCase.input,
           expected: incorrectTestCase.expected,
-          actual: incorrectTestCase.actual,
+          actual: incorrectTestCase.actualOutput,
+          error: incorrectTestCase.error || "Test case failed",
         },
       });
     }
@@ -122,6 +158,7 @@ exports.checkSolution = async (req, res) => {
     student.balance += problem.point;
     student.history.push(problem._id);
     await student.save();
+    fs.unlinkSync(path.join(__dirname, "../tests", fileName));
     return res.json({
       data: {
         correct: true,
