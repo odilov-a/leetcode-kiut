@@ -15,5 +15,7 @@ problemRouter.post("/", authenticate, problemController.createProblem);
 problemRouter.put("/:id", authenticate, problemController.updateProblem);
 problemRouter.delete("/:id", authenticate, problemController.deleteProblem);
 problemRouter.post("/:id/submit", authenticate, solutionController.checkSolution);
+problemRouter.post("/run", authenticate, solutionController.testRunCode);
+problemRouter.get("/:id/solution", authenticate, solutionController.getSolution);
 
 module.exports = problemRouter;

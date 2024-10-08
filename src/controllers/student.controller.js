@@ -35,7 +35,13 @@ exports.getMeStudent = async (req, res) => {
       username: student.username,
       createdAt: student.createdAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: student.role,
+        username: student.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -48,8 +54,7 @@ exports.getMeStudent = async (req, res) => {
 
 exports.getStudentById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const student = await Student.findById(id);
+    const student = await Student.findById(req.params.id);
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -132,12 +137,18 @@ exports.loginStudent = async (req, res) => {
       });
     }
     const token = sign({
-      id: student._id.toString(),
+      id: student._id,
       role: student.role,
       username: student.username,
       createdAt: student.createdAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: student.role,
+        username: student.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -150,9 +161,16 @@ exports.loginStudent = async (req, res) => {
 
 exports.updateStudent = async (req, res) => {
   try {
-    const { id } = req.params;
     const { password, ...otherData } = req.body;
-    const student = await Student.findById(id);
+    let updateData = { ...otherData };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateData.password = hashedPassword;
+    }
+    const student = await Student.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -163,9 +181,6 @@ exports.updateStudent = async (req, res) => {
         },
       });
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    await student.updateOne({ ...otherData, password: hashedPassword });
     return res.json({ data: student });
   } catch (error) {
     return res.status(500).json({
@@ -179,8 +194,7 @@ exports.updateStudent = async (req, res) => {
 
 exports.deleteStudent = async (req, res) => {
   try {
-    const { id } = req.params;
-    const student = await Student.findById(id);
+    const student = await Student.findByIdAndDelete(req.params.id);
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -191,7 +205,6 @@ exports.deleteStudent = async (req, res) => {
         },
       });
     }
-    await student.deleteOne();
     return res.json({ data: student });
   } catch (error) {
     return res.status(500).json({

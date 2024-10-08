@@ -77,7 +77,13 @@ exports.getMeTeacher = async (req, res) => {
       username: teacher.username,
       createdAt: teacher.createdAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: teacher.role,
+        username: teacher.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -90,8 +96,7 @@ exports.getMeTeacher = async (req, res) => {
 
 exports.getTeacherById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const teacher = await Teacher.findById(id).populate("subject");
+    const teacher = await Teacher.findById(req.params.id).populate("subject");
     if (!teacher) {
       return res.status(404).json({
         status: "error",
@@ -165,7 +170,13 @@ exports.loginTeacher = async (req, res) => {
       username: teacher.username,
       createdAt: teacher.createdAt,
     });
-    return res.status(200).json({ data: token });
+    return res.status(200).json({
+      data: {
+        token,
+        role: teacher.role,
+        username: teacher.username,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -178,9 +189,16 @@ exports.loginTeacher = async (req, res) => {
 
 exports.updateTeacher = async (req, res) => {
   try {
-    const { id } = req.params;
     const { password, ...otherData } = req.body;
-    const teacher = await Teacher.findById(id);
+    const updateData = { ...otherData };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateData.password = hashedPassword;
+    }
+    const teacher = await Teacher.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
     if (!teacher) {
       return res.status(404).json({
         status: "error",
@@ -191,9 +209,6 @@ exports.updateTeacher = async (req, res) => {
         },
       });
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    await teacher.updateOne({ ...otherData, password: hashedPassword });
     return res.json({ data: teacher });
   } catch (error) {
     return res.status(500).json({
@@ -207,8 +222,7 @@ exports.updateTeacher = async (req, res) => {
 
 exports.deleteTeacher = async (req, res) => {
   try {
-    const { id } = req.params;
-    const teacher = await Teacher.findById(id);
+    const teacher = await Teacher.findByIdAndDelete(req.params.id);
     if (!teacher) {
       return res.status(404).json({
         status: "error",
@@ -219,7 +233,6 @@ exports.deleteTeacher = async (req, res) => {
         },
       });
     }
-    await teacher.deleteOne();
     return res.json({ data: teacher });
   } catch (error) {
     return res.status(500).json({

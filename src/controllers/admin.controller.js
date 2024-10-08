@@ -30,6 +30,7 @@ exports.getMeAdmin = async (req, res) => {
       });
     }
     const token = sign({
+      id: admin._id,
       role: admin.role,
       username: admin.username,
       createdAt: admin.createdAt,
@@ -53,8 +54,7 @@ exports.getMeAdmin = async (req, res) => {
 
 exports.getAdminById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const admin = await Admin.findById(id);
+    const admin = await Admin.findById(req.params.id);
     if (!admin) {
       return res.status(404).json({
         status: "error",
@@ -185,8 +185,7 @@ exports.updateAdmin = async (req, res) => {
 
 exports.deleteAdmin = async (req, res) => {
   try {
-    const { id } = req.params;
-    const admin = await Admin.findByIdAndDelete(id);
+    const admin = await Admin.findByIdAndDelete(req.params.id);
     if (!admin) {
       return res.status(404).json({
         status: "error",
