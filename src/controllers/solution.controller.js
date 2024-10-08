@@ -141,10 +141,10 @@ exports.checkSolution = async (req, res) => {
       return res.json({
         data: {
           correct: false,
-          input: incorrectTestCase.input,
-          expected: incorrectTestCase.expected,
-          actual: incorrectTestCase.actualOutput,
-          error: incorrectTestCase.error || "Test case failed",
+          // input: incorrectTestCase.input,
+          // expected: incorrectTestCase.expected,
+          // actual: incorrectTestCase.actualOutput,
+          // error: incorrectTestCase.error || "Test case failed",
         },
       });
     }
