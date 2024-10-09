@@ -29,12 +29,10 @@ const problemSchema = new Schema(
       type: Number,
       required: true,
     },
-    tutorials: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
+    tutorials: {
+      type: String,
+      required: true,
+    },
     testCases: {
       inputFileUrl: {
         type: String,
