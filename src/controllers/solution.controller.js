@@ -38,11 +38,8 @@ exports.getSolution = async (req, res) => {
       });
     }
     const solutions = await Solution.find({ studentId: req.student.id });
-    return res.json({
-      data: solutions,
-    });
+    return res.json({ data: solutions });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       status: "error",
       message: error.message,
@@ -76,13 +73,6 @@ exports.checkSolution = async (req, res) => {
       studentId: req.student.id,
       problemId: problem._id,
     });
-    if (existingSolution && existingSolution.isCorrect) {
-      return res.status(400).json({
-        status: "error",
-        message: "This problem was already solved",
-      });
-    }
-
     const timestamp = Date.now();
     let fileName, command;
     switch (language.toLowerCase()) {
@@ -117,7 +107,6 @@ exports.checkSolution = async (req, res) => {
           message: "Invalid language",
         });
     }
-
     const inputFilePath = path.join(
       __dirname,
       "../tests",
@@ -133,7 +122,6 @@ exports.checkSolution = async (req, res) => {
 
     const input = fs.readFileSync(inputFilePath, "utf-8");
     const expectedOutput = fs.readFileSync(outputFilePath, "utf-8");
-
     const result = await executeCode(
       fileName,
       command,
@@ -164,7 +152,6 @@ exports.checkSolution = async (req, res) => {
         },
       });
     }
-
     const student = await Student.findById(req.student.id);
     if (!student) {
       return res.status(404).json({
@@ -172,13 +159,14 @@ exports.checkSolution = async (req, res) => {
         message: "Student not found",
       });
     }
-    student.balance += problem.point;
+    if (!existingSolution || !existingSolution.isCorrect) {
+      student.balance += problem.point;
+    }
     student.history.push(problem._id);
     await student.save();
     fs.unlinkSync(path.join(__dirname, "../tests", fileName));
     fs.unlinkSync(inputFilePath);
     fs.unlinkSync(outputFilePath);
-
     return res.json({
       data: {
         correct: true,
@@ -187,7 +175,6 @@ exports.checkSolution = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       status: "error",
       message: error.message,
@@ -204,7 +191,6 @@ exports.testRunCode = async (req, res) => {
         message: "Code and language are required",
       });
     }
-
     const timestamp = Date.now();
     let fileName, command;
     switch (language.toLowerCase()) {
@@ -239,7 +225,6 @@ exports.testRunCode = async (req, res) => {
       );
       return relevantLine || "Error in compiler code";
     };
-
     const result = await new Promise((resolve) => {
       exec(command, { timeout: 5000 }, (error, stdout, stderr) => {
         if (error) {
@@ -256,7 +241,6 @@ exports.testRunCode = async (req, res) => {
         }
       });
     });
-
     fs.unlinkSync(filePath);
     return res.json({ data: result });
   } catch (error) {
