@@ -26,7 +26,11 @@ const studentSchema = new Schema(
       type: String,
       unique: true,
       required: true,
-    },    
+    },   
+    isExtra: {
+      type: Boolean,
+      default: false,
+    }, 
     photoUrl: [
       {
         type: String,

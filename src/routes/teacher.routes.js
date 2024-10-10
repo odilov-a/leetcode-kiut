@@ -4,9 +4,9 @@ const { authenticate } = require("../middlewares/auth.middleware.js");
 const teacherRouter = Router();
 
 teacherRouter.post("/login", teacherController.loginTeacher);
-teacherRouter.post("/me", authenticate, teacherController.getMeTeacher);
 teacherRouter.post("/register", authenticate, teacherController.registerTeacher);
 teacherRouter.get("/", authenticate, teacherController.getAllTeachers);
+teacherRouter.get("/me", authenticate, teacherController.getMeTeacher);
 teacherRouter.get("/:id", authenticate, teacherController.getTeacherById);
 teacherRouter.put("/:id", authenticate, teacherController.updateTeacher);
 teacherRouter.delete("/:id", authenticate, teacherController.deleteTeacher);
