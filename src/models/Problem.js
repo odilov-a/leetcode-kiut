@@ -33,16 +33,18 @@ const problemSchema = new Schema(
       type: String,
       required: true,
     },
-    testCases: {
-      inputFileUrl: {
-        type: String,
-        required: true,
-      },
-      outputFileUrl: {
-        type: String,
-        required: true,
-      },
-    },
+    testCases: [
+      {
+        inputFileUrl: {
+          type: String,
+          required: true,
+        },
+        outputFileUrl: {
+          type: String,
+          required: true,
+        },
+      }
+    ],
     timeLimit: {
       type: Number,
       required: true,
