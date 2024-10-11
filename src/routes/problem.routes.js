@@ -4,12 +4,12 @@ const solutionController = require("../controllers/solution.controller.js");
 const { authenticate } = require("../middlewares/auth.middleware.js");
 const problemRouter = Router();
 
-problemRouter.get("/", problemController.getAllProblems);
-problemRouter.get("/difficulty/:difficulty", problemController.getAllProblemsByDifficulty);
-problemRouter.get("/subject/:subject", problemController.getAllProblemsBySubject);
-problemRouter.get("/search", problemController.searchProblems);
-problemRouter.get("/:subject/:difficulty", problemController.getProblemsBySubjectAndDifficulty);
-problemRouter.get("/:id", problemController.getProblemById);
+problemRouter.get("/", authenticate, problemController.getAllProblems);
+problemRouter.get("/difficulty/:difficulty", authenticate, problemController.getAllProblemsByDifficulty);
+problemRouter.get("/subject/:subject", authenticate, problemController.getAllProblemsBySubject);
+problemRouter.get("/search", authenticate, problemController.searchProblems);
+problemRouter.get("/:subject/:difficulty", authenticate, problemController.getProblemsBySubjectAndDifficulty);
+problemRouter.get("/:id", authenticate, problemController.getProblemById);
 problemRouter.get("/teacher/:teacher", authenticate, problemController.getAllProblemsByTeacher);
 problemRouter.post("/", authenticate, problemController.createProblem);
 problemRouter.put("/:id", authenticate, problemController.updateProblem);
