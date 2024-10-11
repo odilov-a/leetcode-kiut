@@ -5,29 +5,9 @@ const { exec } = require("child_process");
 const Problem = require("../models/Problem.js");
 const Student = require("../models/Student.js");
 const Solution = require("../models/Solution.js");
+const Attempt = require("../models/Attempt.js");
 
 const stripAnsi = (str) => str.replace(/\x1b\[[0-9;]*m/g, "").trim();
-
-const executeCode = async (fileName, command, input, expectedOutput, code) => {
-  const filePath = path.join(__dirname, "../tests", fileName);
-  fs.writeFileSync(filePath, code, { encoding: "utf8" });
-  return new Promise((resolve) => {
-    exec(command, { input, timeout: 5000 }, (error, stdout, stderr) => {
-      const actualOutput = stripAnsi(stdout);
-      const isCorrect = actualOutput === expectedOutput.trim();
-      resolve({
-        actualOutput,
-        isCorrect,
-        error: error ? stripAnsi(stderr) : null,
-      });
-    });
-  });
-};
-
-const downloadFile = async (url, filepath) => {
-  const response = await axios.get(url, { responseType: "arraybuffer" });
-  fs.writeFileSync(filepath, response.data);
-};
 
 exports.getSolution = async (req, res) => {
   try {
@@ -44,6 +24,35 @@ exports.getSolution = async (req, res) => {
       status: "error",
       message: error.message,
     });
+  }
+};
+
+const executeCode = async (fileName, command, input, expectedOutput, code) => {
+  const filePath = path.join(__dirname, "../tests", fileName);
+  fs.writeFileSync(filePath, code, { encoding: "utf8" });
+  return new Promise((resolve) => {
+    const child = exec(command, { timeout: 5000 }, (error, stdout, stderr) => {
+      const actualOutput = stripAnsi(stdout);
+      const isCorrect = actualOutput.trim() === expectedOutput.trim();
+      resolve({
+        actualOutput,
+        isCorrect,
+        error: error ? stripAnsi(stderr) : null,
+      });
+    });
+    if (input) {
+      child.stdin.write(input);
+      child.stdin.end();
+    }
+  });
+};
+
+const downloadFile = async (url, filepath) => {
+  try {
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+    fs.writeFileSync(filepath, response.data);
+  } catch (error) {
+    throw new Error("Invalid URL");
   }
 };
 
@@ -67,6 +76,12 @@ exports.checkSolution = async (req, res) => {
       return res.status(404).json({
         status: "error",
         message: "Problem not found",
+      });
+    }
+    if (!problem.testCases || problem.testCases.length === 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "Test cases not found for the problem",
       });
     }
     const existingSolution = await Solution.findOne({
@@ -107,30 +122,49 @@ exports.checkSolution = async (req, res) => {
           message: "Invalid language",
         });
     }
-    const inputFilePath = path.join(
-      __dirname,
-      "../tests",
-      `input_${timestamp}.txt`
-    );
-    const outputFilePath = path.join(
-      __dirname,
-      "../tests",
-      `output_${timestamp}.txt`
-    );
-    await downloadFile(problem.testCases.inputFileUrl, inputFilePath);
-    await downloadFile(problem.testCases.outputFileUrl, outputFilePath);
+    let allCorrect = true;
+    let failedTestCaseIndex = null;
+    for (let i = 0; i < problem.testCases.length; i++) {
+      const testCase = problem.testCases[i];
+      const inputFilePath = path.join(
+        __dirname,
+        "../tests",
+        `input_${timestamp}.txt`
+      );
+      const outputFilePath = path.join(
+        __dirname,
+        "../tests",
+        `output_${timestamp}.txt`
+      );
+      await downloadFile(testCase.inputFileUrl, inputFilePath);
+      await downloadFile(testCase.outputFileUrl, outputFilePath);
+      const input = fs.readFileSync(inputFilePath, "utf-8");
+      const expectedOutput = fs.readFileSync(outputFilePath, "utf-8");
+      const result = await executeCode(
+        fileName,
+        command,
+        input,
+        expectedOutput,
+        code
+      );
 
-    const input = fs.readFileSync(inputFilePath, "utf-8");
-    const expectedOutput = fs.readFileSync(outputFilePath, "utf-8");
-    const result = await executeCode(
-      fileName,
-      command,
-      input,
-      expectedOutput,
-      code
-    );
-    const allCorrect = result.isCorrect;
-
+      if (!result.isCorrect) {
+        allCorrect = false;
+        failedTestCaseIndex = i + 1;
+        break;
+      }
+      fs.unlinkSync(inputFilePath);
+      fs.unlinkSync(outputFilePath);
+    }
+    const attempt = new Attempt({
+      studentId: req.student.id,
+      problemId: problem._id,
+      code,
+      language,
+      isCorrect: allCorrect,
+      failedTestCaseIndex,
+    });
+    await attempt.save();
     if (existingSolution) {
       existingSolution.isCorrect = allCorrect;
       await existingSolution.save();
@@ -143,15 +177,6 @@ exports.checkSolution = async (req, res) => {
       });
       await solution.save();
     }
-
-    if (!allCorrect) {
-      return res.json({
-        data: {
-          correct: false,
-          error: result.error || "Test case failed",
-        },
-      });
-    }
     const student = await Student.findById(req.student.id);
     if (!student) {
       return res.status(404).json({
@@ -159,17 +184,20 @@ exports.checkSolution = async (req, res) => {
         message: "Student not found",
       });
     }
-    if (!existingSolution || !existingSolution.isCorrect) {
+    if (student.balance === null) {
+      student.balance = 0;
+    }
+    if (allCorrect && (!existingSolution || !existingSolution.isCorrect)) {
       student.balance += problem.point;
+    } else {
+      console.log("Failed test case index", failedTestCaseIndex);
     }
     student.history.push(problem._id);
     await student.save();
     fs.unlinkSync(path.join(__dirname, "../tests", fileName));
-    fs.unlinkSync(inputFilePath);
-    fs.unlinkSync(outputFilePath);
     return res.json({
       data: {
-        correct: true,
+        correct: allCorrect,
         balance: student.balance,
         history: student.history,
       },

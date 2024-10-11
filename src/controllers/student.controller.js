@@ -1,11 +1,26 @@
 const bcrypt = require("bcrypt");
 const Student = require("../models/Student.js");
+const Attempt = require("../models/Attempt.js");
 const { sign } = require("../utils/jwt.js");
 
 exports.getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
     return res.json({ data: students });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: error.message,
+      },
+    });
+  }
+};
+
+exports.getAttemptByStudentId = async (req, res) => {
+  try {
+    const attempts = await Attempt.find({ studentId: req.params.id });
+    return res.json({ data: attempts });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -183,10 +198,13 @@ exports.updateStudent = async (req, res) => {
     }
     return res.json({ data: student });
   } catch (error) {
+    console.error(`Error updating student: ${error.message}`);
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }
