@@ -31,6 +31,20 @@ exports.getAttemptByStudentId = async (req, res) => {
   }
 };
 
+exports.getAllStudentsHistory = async (req, res) => {
+  try {
+    const students = await Attempt.find();
+    return res.json({ data: students });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: error.message,
+      },
+    });
+  }
+};
+
 exports.getMeStudent = async (req, res) => {
   try {
     const student = await req.student;

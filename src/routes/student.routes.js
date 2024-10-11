@@ -9,6 +9,7 @@ studentRouter.get("/", authenticate, studentController.getAllStudents);
 studentRouter.get("/me", authenticate, studentController.getMeStudent);
 studentRouter.get("/top/balance", authenticate, studentController.getTopStudentsByBalance);
 
+studentRouter.get("/histories", authenticate, studentController.getAllStudentsHistory);
 studentRouter.get("/:id/attempts", authenticate, studentController.getAttemptByStudentId);
 studentRouter.get("/:id", authenticate, studentController.getStudentById);
 studentRouter.put("/:id", authenticate, studentController.updateStudent);
