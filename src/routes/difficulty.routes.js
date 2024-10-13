@@ -1,12 +1,13 @@
 const { Router } = require("express");
 const difficultyController = require("../controllers/difficulty.controller.js");
 const { authenticate } = require("../middlewares/auth.middleware.js");
+const { requireRole } = require("../middlewares/role.middleware.js");
 const difficultyRouter = Router();
 
 difficultyRouter.get("/", authenticate, difficultyController.getAllDifficulties);
 difficultyRouter.get("/:id", authenticate, difficultyController.getDifficultyById);
-difficultyRouter.post("/", authenticate, difficultyController.createDifficulty);
-difficultyRouter.put("/:id", authenticate, difficultyController.updateDifficulty);
-difficultyRouter.delete("/:id", authenticate, difficultyController.deleteDifficulty);
+difficultyRouter.post("/", authenticate, requireRole(["admin"]), difficultyController.createDifficulty);
+difficultyRouter.put("/:id", authenticate, requireRole(["admin"]), difficultyController.updateDifficulty);
+difficultyRouter.delete("/:id", authenticate, requireRole(["admin"]), difficultyController.deleteDifficulty);
 
 module.exports = difficultyRouter;

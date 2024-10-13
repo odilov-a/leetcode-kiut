@@ -14,21 +14,25 @@ exports.authenticate = (req, res, next) => {
   }
   try {
     const decoded = verify(token);
-    if (decoded.role === "admin") {
-      req.admin = decoded;
-    } else if (decoded.role === "student") {
-      req.student = decoded;
-    } else if (decoded.role === "teacher") {
-      req.teacher = decoded;
-    } else {
-      return res.status(403).json({
-        status: "error",
-        message: {
-          uz: "Ruxsat yo'q",
-          ru: "Доступ запрещен",
-          en: "Access denied",
-        },
-      });
+    switch (decoded.role) {
+      case "admin":
+        req.admin = decoded;
+        break;
+      case "student":
+        req.student = decoded;
+        break;
+      case "teacher":
+        req.teacher = decoded;
+        break;
+      default:
+        return res.status(403).json({
+          status: "error",
+          message: {
+            uz: "Ruxsat yo'q",
+            ru: "Доступ запрещен",
+            en: "Access denied",
+          },
+        });
     }
     next();
   } catch (error) {
