@@ -7,6 +7,8 @@ const teacherRouter = Router();
 teacherRouter.post("/login", teacherController.loginTeacher);
 
 teacherRouter.post("/register", authenticate, requireRole(["admin"]), teacherController.registerTeacher);
+teacherRouter.put("/update-teacher", authenticate, requireRole(["teacher"]), teacherController.meUpdateTeacher);
+
 teacherRouter.put("/:id", authenticate, requireRole(["admin", "teacher"]), teacherController.updateTeacher);
 teacherRouter.delete("/:id", authenticate, requireRole(["admin"]), teacherController.deleteTeacher);
 

@@ -14,6 +14,7 @@ exports.authenticate = (req, res, next) => {
   }
   try {
     const decoded = verify(token);
+    req.userId = decoded.id;
     switch (decoded.role) {
       case "admin":
         req.admin = decoded;

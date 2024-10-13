@@ -9,6 +9,9 @@ adminRouter.post("/login", adminController.loginAdmin);
 
 adminRouter.get("/", authenticate, requireRole(["admin"]), adminController.getAllAdmins);
 adminRouter.get("/me", authenticate, requireRole(["admin"]), adminController.getMeAdmin);
+
+adminRouter.put("/update-admin", authenticate, requireRole(["admin"]), adminController.meUpdateAdmin);
+
 adminRouter.get("/:id", authenticate, requireRole(["admin"]), adminController.getAdminById);
 adminRouter.put("/:id", authenticate, requireRole(["admin"]), adminController.updateAdmin);
 adminRouter.delete("/:id", authenticate, requireRole(["admin"]), adminController.deleteAdmin);

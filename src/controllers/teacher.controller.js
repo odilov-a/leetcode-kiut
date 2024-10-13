@@ -187,6 +187,42 @@ exports.loginTeacher = async (req, res) => {
   }
 };
 
+exports.meUpdateTeacher = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { password, ...otherData } = req.body;
+    let updateData = { ...otherData };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateData.password = hashedPassword;
+    }
+    const teacher = await Teacher.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+    if (!teacher) {
+      return res.status(404).json({
+        status: "error",
+        message: {
+          uz: "O'qituvchi topilmadi",
+          ru: "Учитель не найден",
+          en: "Teacher not found",
+        },
+      });
+    }
+    return res.json({ data: teacher });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: error.message,
+        ru: error.message,
+        en: error.message,
+      },
+    });
+  }
+};
+
 exports.updateTeacher = async (req, res) => {
   try {
     const { password, ...otherData } = req.body;

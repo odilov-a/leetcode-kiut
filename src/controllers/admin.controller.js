@@ -145,6 +145,42 @@ exports.loginAdmin = async (req, res) => {
   }
 };
 
+exports.meUpdateAdmin = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { password, ...otherData } = req.body;
+    let updateData = { ...otherData };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      updateData.password = hashedPassword;
+    }
+    const admin = await Admin.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+    if (!admin) {
+      return res.status(404).json({
+        status: "error",
+        message: {
+          uz: "Admin topilmadi",
+          ru: "Администратор не найден",
+          en: "Admin not found",
+        },
+      });
+    }
+    return res.json({ data: admin });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: error.message,
+        ru: error.message,
+        en: error.message,
+      },
+    });
+  }
+};
+
 exports.updateAdmin = async (req, res) => {
   try {
     const { username, password } = req.body;

@@ -12,6 +12,7 @@ studentRouter.get("/me", authenticate, requireRole(["student"]), studentControll
 studentRouter.get("/top/balance", authenticate, requireRole(["admin", "teacher"]), studentController.getTopStudentsByBalance);
 
 studentRouter.get("/histories", authenticate, requireRole(["admin", "teacher"]), studentController.getAllStudentsHistory);
+studentRouter.put("/update-student", authenticate, requireRole(["student"]), studentController.meUpdateStudent);
 studentRouter.get("/:id/attempts", authenticate, requireRole(["admin", "teacher"]), studentController.getAttemptByStudentId);
 
 studentRouter.get("/:id", authenticate, requireRole(["admin", "teacher", "student"]), studentController.getStudentById);
