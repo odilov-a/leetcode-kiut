@@ -60,7 +60,7 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getMeTeacher = async (req, res) => {
   try {
-    const teacher = await req.teacher;
+    const teacher = await Teacher.findById(req.teacher.id).populate("subject");
     if (!teacher) {
       return res.status(404).json({
         status: "error",
@@ -71,6 +71,14 @@ exports.getMeTeacher = async (req, res) => {
         },
       });
     }
+    const lang = req.query.lang || "uz";
+    const subjects = teacher.subject.map((sub) => {
+      return {
+        _id: sub._id,
+        title: sub[`title${lang.charAt(0).toUpperCase() + lang.slice(1)}`],
+        createdAt: sub.createdAt,
+      };
+    });
     const token = sign({
       id: teacher._id,
       role: teacher.role,
@@ -82,6 +90,11 @@ exports.getMeTeacher = async (req, res) => {
         token,
         role: teacher.role,
         username: teacher.username,
+        firstName: teacher.firstName,
+        lastName: teacher.lastName,
+        phoneNumber: teacher.phoneNumber,
+        photoUrl: teacher.photoUrl,
+        subject: subjects,
       },
     });
   } catch (error) {
@@ -89,6 +102,8 @@ exports.getMeTeacher = async (req, res) => {
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }

@@ -18,7 +18,7 @@ exports.getAllAdmins = async (req, res) => {
 
 exports.getMeAdmin = async (req, res) => {
   try {
-    const admin = await req.admin;
+    const admin = await Admin.findById(req.admin.id);
     if (!admin) {
       return res.status(404).json({
         status: "error",
@@ -47,6 +47,8 @@ exports.getMeAdmin = async (req, res) => {
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }

@@ -47,7 +47,7 @@ exports.getAllStudentsHistory = async (req, res) => {
 
 exports.getMeStudent = async (req, res) => {
   try {
-    const student = await req.student;
+    const student = await Student.findById(req.student.id).populate("history");
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -69,6 +69,11 @@ exports.getMeStudent = async (req, res) => {
         token,
         role: student.role,
         username: student.username,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        balance: student.balance,
+        phoneNumber: student.phoneNumber,
+        photoUrl: student.photoUrl,
       },
     });
   } catch (error) {
