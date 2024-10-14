@@ -14,16 +14,18 @@ exports.authenticate = (req, res, next) => {
   }
   try {
     const decoded = verify(token);
-    req.userId = decoded.id;
     switch (decoded.role) {
       case "admin":
         req.admin = decoded;
+        req.userId = decoded.id;
         break;
       case "student":
         req.student = decoded;
+        req.userId = decoded.id;
         break;
       case "teacher":
         req.teacher = decoded;
+        req.userId = decoded.id;
         break;
       default:
         return res.status(403).json({
