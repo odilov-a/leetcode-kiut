@@ -28,7 +28,6 @@ const teacherSchema = new Schema(
     phoneNumber: {
       type: String,
       unique: true,
-      required: true,
     },
     photoUrl: [
       {
