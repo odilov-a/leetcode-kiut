@@ -5,8 +5,9 @@ const { requireRole } = require("../middlewares/role.middleware.js");
 const subjectRouter = Router();
 
 subjectRouter.get("/", authenticate, subjectController.getAllSubjects);
-subjectRouter.get("/teacher/:id", authenticate, subjectController.getAllSubjectsByTeacher);
+
 subjectRouter.get("/:id", authenticate, subjectController.getSubjectById);
+subjectRouter.get("/teacher/subject", authenticate, requireRole(["teacher", "admin"]), subjectController.getAllSubjectsByTeacher);
 
 subjectRouter.post("/", authenticate, requireRole(["admin"]), subjectController.createSubject);
 subjectRouter.put("/:id", authenticate, requireRole(["admin"]), subjectController.updateSubject);

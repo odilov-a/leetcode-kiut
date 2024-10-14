@@ -1,4 +1,5 @@
 const Subject = require("../models/Subject.js");
+const Teacher = require("../models/Teacher.js");
 
 const getLanguageField = (lang) => {
   switch (lang) {
@@ -97,26 +98,32 @@ exports.getSubjectById = async (req, res) => {
 
 exports.getAllSubjectsByTeacher = async (req, res) => {
   try {
-    const { lang } = req.query;
-    const fieldName = getLanguageField(lang);
-    if (lang && !fieldName) {
-      return res.status(400).json({
+    const teacherId = req.teacher.id;
+    const teacher = await Teacher.findById(teacherId).populate("subject");
+    if (!teacher) {
+      return res.status(404).json({
         status: "error",
         message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
+          uz: "O'qituvchi topilmadi",
+          ru: "Учитель не найден",
+          en: "Teacher not found",
         },
       });
     }
-    const subjects = await Subject.find({ teacher: req.params.id });
+    const { lang } = req.query;
+    const subjects = teacher.subject;
     const result = subjects.map((subject) => {
+      const titleField =
+        lang === "uz"
+          ? subject.titleUz
+          : lang === "ru"
+          ? subject.titleRu
+          : lang === "en"
+          ? subject.titleEn
+          : subject.titleEn;
       return {
         _id: subject._id,
-        titleUz: subject.titleUz,
-        titleRu: subject.titleRu,
-        titleEn: subject.titleEn,
-        title: fieldName ? subject[fieldName] : undefined,
+        title: titleField,
       };
     });
     return res.json({ data: result });
