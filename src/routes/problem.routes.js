@@ -9,10 +9,11 @@ problemRouter.get("/", authenticate, problemController.getAllProblems);
 problemRouter.get("/difficulty/:difficulty", authenticate, problemController.getAllProblemsByDifficulty);
 problemRouter.get("/subject/:subject", authenticate, problemController.getAllProblemsBySubject);
 problemRouter.get("/search", authenticate, problemController.searchProblems);
+
+problemRouter.get("/teacher/problems", authenticate, requireRole(["teacher", "admin"]), problemController.getAllProblemsByTeacher);
+
 problemRouter.get("/:subject/:difficulty", authenticate, problemController.getProblemsBySubjectAndDifficulty);
 problemRouter.get("/:id", authenticate, problemController.getProblemById);
-
-problemRouter.get("/teacher/:teacher", authenticate, requireRole(["teacher", "admin"]), problemController.getAllProblemsByTeacher);
 
 problemRouter.post("/", authenticate, requireRole(["teacher", "admin"]), problemController.createProblem);
 problemRouter.put("/:id", authenticate, requireRole(["teacher", "admin"]), problemController.updateProblem);

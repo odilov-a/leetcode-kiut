@@ -201,16 +201,67 @@ exports.getProblemsBySubjectAndDifficulty = async (req, res) => {
 
 exports.getAllProblemsByTeacher = async (req, res) => {
   try {
-    const { teacher } = req.params;
-    const problems = await Problem.find({ teacher })
+    const teacherId = req.teacher.id;
+    const { lang } = req.query;
+    const titleFieldName = getLanguageField(lang, "title");
+    const descriptionFieldName = getLanguageField(lang, "description");
+    if (lang && (!titleFieldName || !descriptionFieldName)) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
+    const problems = await Problem.find({ teacher: teacherId })
       .populate("subject")
       .populate("difficulty");
-    return res.json({ data: problems });
+    const result = problems.map((problem) => {
+      const subjectTitle = titleFieldName
+        ? problem.subject[titleFieldName]
+        : problem.subject.titleEn;
+
+      const difficultyTitle = titleFieldName
+        ? problem.difficulty[titleFieldName]
+        : problem.difficulty.titleEn;
+
+      return {
+        _id: problem._id,
+        titleUz: problem.titleUz,
+        titleRu: problem.titleRu,
+        titleEn: problem.titleEn,
+        title: titleFieldName ? problem[titleFieldName] : problem.titleEn,
+        descriptionUz: problem.descriptionUz,
+        descriptionRu: problem.descriptionRu,
+        descriptionEn: problem.descriptionEn,
+        description: descriptionFieldName
+          ? problem[descriptionFieldName]
+          : problem.descriptionEn,
+        point: problem.point,
+        tutorials: problem.tutorials,
+        testCases: problem.testCases,
+        timeLimit: problem.timeLimit,
+        memoryLimit: problem.memoryLimit,
+        subject: {
+          _id: problem.subject._id,
+          title: subjectTitle,
+        },
+        difficulty: {
+          _id: problem.difficulty._id,
+          title: difficultyTitle,
+        },
+      };
+    });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }
@@ -218,14 +269,20 @@ exports.getAllProblemsByTeacher = async (req, res) => {
 
 exports.createProblem = async (req, res) => {
   try {
-    const problem = new Problem(req.body);
-    await problem.save();
-    return res.status(201).json({ data: problem });
+    const teacherId = req.teacher.id;
+    const newProblem = new Problem({
+      ...req.body,
+      teacher: teacherId,
+    });
+    await newProblem.save();
+    return res.status(201).json({ data: newProblem });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }

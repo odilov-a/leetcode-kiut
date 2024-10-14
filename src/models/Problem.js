@@ -65,6 +65,12 @@ const problemSchema = new Schema(
       required: true,
       index: true,
     },
+    teacher: {
+      type: Types.ObjectId,
+      ref: "teachers",
+      required: true,
+      index: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
