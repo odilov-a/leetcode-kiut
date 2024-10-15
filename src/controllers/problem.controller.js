@@ -110,12 +110,54 @@ exports.getProblemById = async (req, res) => {
         },
       });
     }
-    return res.json({ data: problem });
+    const lang = req.query.lang || "en";
+    const titles = {
+      uz: problem.titleUz,
+      ru: problem.titleRu,
+      en: problem.titleEn,
+    };
+    const descriptions = {
+      uz: problem.descriptionUz,
+      ru: problem.descriptionRu,
+      en: problem.descriptionEn,
+    };
+    const subjectTitles = {
+      uz: problem.subject?.titleUz,
+      ru: problem.subject?.titleRu,
+      en: problem.subject?.titleEn,
+    };
+    const difficultyTitles = {
+      uz: problem.difficulty?.titleUz,
+      ru: problem.difficulty?.titleRu,
+      en: problem.difficulty?.titleEn,
+    };
+    return res.json({
+      data: {
+        _id: problem._id,
+        title: titles[lang],
+        description: descriptions[lang],
+        point: problem.point,
+        tutorials: problem.tutorials,
+        testCases: problem.testCases,
+        timeLimit: problem.timeLimit,
+        memoryLimit: problem.memoryLimit,
+        subject: {
+          _id: problem.subject?._id,
+          title: subjectTitles[lang],
+        },
+        difficulty: {
+          _id: problem.difficulty?._id,
+          title: difficultyTitles[lang],
+        },
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
-        uz: error.message,
+        uz: "Server xatosi yuz berdi",
+        ru: "Произошла ошибка сервера",
+        en: "Server error occurred",
       },
     });
   }

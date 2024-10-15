@@ -119,15 +119,16 @@ exports.checkSolution = async (req, res) => {
       case "cpp":
       case "c++":
         fileName = `${timestamp}.cpp`;
+        const outputFileName = `${timestamp}.exe`;
         command = `g++ ${path.join(
           __dirname,
           "../tests",
           fileName
-        )} -o ${path.join(__dirname, "../tests", timestamp)} && ${path.join(
+        )} -o ${path.join(
           __dirname,
           "../tests",
-          timestamp
-        )}`;
+          outputFileName
+        )} && ${path.join(__dirname, "../tests", outputFileName)}`;
         break;
       default:
         return res.status(400).json({
@@ -233,7 +234,7 @@ exports.testRunCode = async (req, res) => {
       });
     }
     const timestamp = Date.now();
-    let fileName, command;
+    let fileName, command, className;
     switch (language.toLowerCase()) {
       case "python":
         fileName = `${timestamp}.py`;
@@ -241,11 +242,12 @@ exports.testRunCode = async (req, res) => {
         break;
       case "java":
         fileName = `${timestamp}.java`;
+        className = code.match(/class\s+(\w+)/)[1];
         command = `javac ${path.join(
           __dirname,
           "../tests",
           fileName
-        )} && java -cp ${path.join(__dirname, "../tests")} ${timestamp}`;
+        )} && java -cp ${path.join(__dirname, "../tests")} ${className}`;
         break;
       case "javascript":
         fileName = `${timestamp}.js`;
@@ -254,15 +256,21 @@ exports.testRunCode = async (req, res) => {
       case "cpp":
       case "c++":
         fileName = `${timestamp}.cpp`;
+        const outputFileName = `${timestamp}.exe`;
         command = `g++ ${path.join(
           __dirname,
           "../tests",
           fileName
-        )} -o ${path.join(__dirname, "../tests", timestamp)} && ${path.join(
+        )} -o ${path.join(
           __dirname,
           "../tests",
-          timestamp
-        )}`;
+          outputFileName
+        )} && ${path.join(__dirname, "../tests", outputFileName)}`;
+        break;
+      case "html":
+      case "css":
+        fileName = `${timestamp}.html`;
+        command = `start ${path.join(__dirname, "../tests", fileName)}`;
         break;
       default:
         return res.status(400).json({
@@ -424,6 +432,19 @@ exports.testRunCode = async (req, res) => {
 //         fileName = `${timestamp}.js`;
 //         command = `node ${path.join(__dirname, "../tests", fileName)}`;
 //         break;
+//       case "cpp":
+//       case "c++":
+//         fileName = `${timestamp}.cpp`;
+//         command = `g++ ${path.join(
+//           __dirname,
+//           "../tests",
+//           fileName
+//         )} -o ${path.join(__dirname, "../tests", timestamp)} && ${path.join(
+//           __dirname,
+//           "../tests",
+//           timestamp
+//         )}`;
+//         break;
 //       default:
 //         return res.status(400).json({
 //           status: "error",
@@ -545,6 +566,19 @@ exports.testRunCode = async (req, res) => {
 //       case "javascript":
 //         fileName = `${timestamp}.js`;
 //         command = `node ${path.join(__dirname, "../tests", fileName)}`;
+//         break;
+//       case "cpp":
+//       case "c++":
+//         fileName = `${timestamp}.cpp`;
+//         command = `g++ ${path.join(
+//           __dirname,
+//           "../tests",
+//           fileName
+//         )} -o ${path.join(__dirname, "../tests", timestamp)} && ${path.join(
+//           __dirname,
+//           "../tests",
+//           timestamp
+//         )}`;
 //         break;
 //       default:
 //         return res.status(400).json({

@@ -13,7 +13,7 @@ problemRouter.get("/search", authenticate, problemController.searchProblems);
 problemRouter.get("/teacher/problems", authenticate, requireRole(["teacher", "admin"]), problemController.getAllProblemsByTeacher);
 
 problemRouter.get("/:subject/:difficulty", authenticate, problemController.getProblemsBySubjectAndDifficulty);
-problemRouter.get("/:id", authenticate, problemController.getProblemById);
+problemRouter.get("/:id", problemController.getProblemById);
 
 problemRouter.post("/", authenticate, requireRole(["teacher", "admin"]), problemController.createProblem);
 problemRouter.put("/:id", authenticate, requireRole(["teacher", "admin"]), problemController.updateProblem);
