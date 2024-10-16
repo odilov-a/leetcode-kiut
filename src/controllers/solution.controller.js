@@ -56,6 +56,14 @@ const downloadFile = async (url, filepath) => {
   }
 };
 
+const extractErrorMessage = (errorOutput) => {
+  const lines = errorOutput.split("\n");
+  const relevantLine = lines.find(
+    (line) => line.includes("Error") || line.includes("Exception")
+  );
+  return relevantLine || "Error in compiler code";
+};
+
 exports.checkSolution = async (req, res) => {
   try {
     const { code, language } = req.body;
@@ -217,9 +225,10 @@ exports.checkSolution = async (req, res) => {
       },
     });
   } catch (error) {
+    const errorMessage = extractErrorMessage(error.message);
     return res.status(500).json({
       status: "error",
-      message: error.message,
+      message: errorMessage,
     });
   }
 };
@@ -280,13 +289,6 @@ exports.testRunCode = async (req, res) => {
     }
     const filePath = path.join(__dirname, "../tests", fileName);
     fs.writeFileSync(filePath, code, { encoding: "utf8" });
-    const extractErrorMessage = (errorOutput) => {
-      const lines = errorOutput.split("\n");
-      const relevantLine = lines.find(
-        (line) => line.includes("Error") || line.includes("Exception")
-      );
-      return relevantLine || "Error in compiler code";
-    };
     const result = await new Promise((resolve) => {
       exec(command, { timeout: 5000 }, (error, stdout, stderr) => {
         if (error) {
@@ -306,7 +308,6 @@ exports.testRunCode = async (req, res) => {
     fs.unlinkSync(filePath);
     return res.json({ data: result });
   } catch (error) {
-    console.error(`Server error: ${error.message}`);
     return res.status(500).json({
       status: "error",
       message: error.message,
