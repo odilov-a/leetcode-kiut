@@ -68,7 +68,11 @@ const problemSchema = new Schema(
     teacher: {
       type: Types.ObjectId,
       ref: "teachers",
-      required: true,
+      index: true,
+    },
+    admin: {
+      type: Types.ObjectId,
+      ref: "admins",
       index: true,
     },
     createdAt: {

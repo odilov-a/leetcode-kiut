@@ -2,6 +2,8 @@ const { verify } = require("../utils/jwt.js");
 
 exports.authenticate = (req, res, next) => {
   const token = req.headers["authorization"]?.split(" ")[1];
+  console.log("Token:", token); // Check if token is present
+
   if (!token) {
     return res.status(401).json({
       status: "error",
@@ -12,8 +14,11 @@ exports.authenticate = (req, res, next) => {
       },
     });
   }
+
   try {
     const decoded = verify(token);
+    console.log("Decoded Token:", decoded); // Check the decoded token
+
     switch (decoded.role) {
       case "admin":
         req.admin = decoded;
@@ -37,8 +42,11 @@ exports.authenticate = (req, res, next) => {
           },
         });
     }
+
+    console.log("User assigned:", req.userId); // Check which user is assigned
     next();
   } catch (error) {
+    console.error("Token verification error:", error); // Log the error for debugging
     return res.status(401).json({
       status: "error",
       message: {
