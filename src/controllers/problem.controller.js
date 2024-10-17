@@ -258,27 +258,23 @@ exports.getAllProblemsByDifficulty = async (req, res) => {
   }
 };
 
-exports.getAllProblemsBySubject = async (req, res) => {
-  try {
-    const { subject } = req.params;
-    const problems = await Problem.find({ subject })
-      .populate("subject")
-      .populate("difficulty");
-    return res.json({ data: problems });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
-  }
-};
-
 exports.searchProblems = async (req, res) => {
   try {
-    const { search } = req.query;
-    const regex = new RegExp(search, "i");
+    const { search, lang } = req.query;
+    const decodedSearch = decodeURIComponent(search);
+    const regex = new RegExp(decodedSearch, "i");
+    const titleFieldName = getLanguageField(lang, "title");
+    const descriptionFieldName = getLanguageField(lang, "description");
+    if (lang && (!titleFieldName || !descriptionFieldName)) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
     const problems = await Problem.find({
       $or: [
         { titleUz: { $regex: regex } },
@@ -291,12 +287,48 @@ exports.searchProblems = async (req, res) => {
     })
       .populate("subject")
       .populate("difficulty");
-    return res.json({ data: problems });
+    const result = problems.map((problem) => {
+      const subjectTitle = titleFieldName
+        ? problem.subject[titleFieldName]
+        : problem.subject.titleEn;
+      const difficultyTitle = titleFieldName
+        ? problem.difficulty[titleFieldName]
+        : problem.difficulty.titleEn;
+      return {
+        _id: problem._id,
+        titleUz: problem.titleUz,
+        titleRu: problem.titleRu,
+        titleEn: problem.titleEn,
+        title: titleFieldName ? problem[titleFieldName] : problem.titleEn,
+        descriptionUz: problem.descriptionUz,
+        descriptionRu: problem.descriptionRu,
+        descriptionEn: problem.descriptionEn,
+        description: descriptionFieldName
+          ? problem[descriptionFieldName]
+          : problem.descriptionEn,
+        point: problem.point,
+        tutorials: problem.tutorials,
+        testCases: problem.testCases,
+        timeLimit: problem.timeLimit,
+        memoryLimit: problem.memoryLimit,
+        subject: {
+          _id: problem.subject._id,
+          title: subjectTitle,
+        },
+        difficulty: {
+          _id: problem.difficulty._id,
+          title: difficultyTitle,
+        },
+      };
+    });
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }
@@ -321,7 +353,6 @@ exports.getProblemsBySubjectAndDifficulty = async (req, res) => {
 
 exports.createProblem = async (req, res) => {
   try {
-    // Corrected condition
     if ((!req.admin || !req.admin.id) && (!req.teacher || !req.teacher.id)) {
       return res.status(401).json({
         status: "error",
@@ -332,16 +363,13 @@ exports.createProblem = async (req, res) => {
         },
       });
     }
-
-    const teacherId = req.teacher ? req.teacher.id : null; // Get teacher ID
-    const adminId = req.admin ? req.admin.id : null; // Check for admin ID too, if needed
-
+    const teacherId = req.teacher ? req.teacher.id : null;
+    const adminId = req.admin ? req.admin.id : null;
     const newProblem = new Problem({
       ...req.body,
       teacher: teacherId,
       admin: adminId,
     });
-
     await newProblem.save();
     return res.status(201).json({ data: newProblem });
   } catch (error) {
