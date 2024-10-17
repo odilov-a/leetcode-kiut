@@ -4,7 +4,6 @@ const axios = require("axios");
 const { exec } = require("child_process");
 const Problem = require("../models/Problem.js");
 const Student = require("../models/Student.js");
-const Solution = require("../models/Solution.js");
 const Attempt = require("../models/Attempt.js");
 
 const stripAnsi = (str) => str.replace(/\x1b\[[0-9;]*m/g, "").trim();
@@ -17,8 +16,8 @@ exports.getSolution = async (req, res) => {
         message: "User not authenticated",
       });
     }
-    const solutions = await Solution.find({ studentId: req.student.id });
-    return res.json({ data: solutions });
+    const attempts = await Attempt.find({ studentId: req.student.id });
+    return res.json({ data: attempts });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -92,10 +91,12 @@ exports.checkSolution = async (req, res) => {
         message: "Test cases not found for the problem",
       });
     }
-    const existingSolution = await Solution.findOne({
+    const existingAttempt = await Attempt.findOne({
       studentId: req.student.id,
       problemId: problem._id,
+      isCorrect: true,
     });
+    const es = !existingAttempt;
     const timestamp = Date.now();
     let fileName, command;
     switch (language.toLowerCase()) {
@@ -169,7 +170,6 @@ exports.checkSolution = async (req, res) => {
         expectedOutput,
         code
       );
-
       if (!result.isCorrect) {
         allCorrect = false;
         failedTestCaseIndex = i + 1;
@@ -187,18 +187,7 @@ exports.checkSolution = async (req, res) => {
       failedTestCaseIndex,
     });
     await attempt.save();
-    if (existingSolution) {
-      existingSolution.isCorrect = allCorrect;
-      await existingSolution.save();
-    } else {
-      const solution = new Solution({
-        studentId: req.student.id,
-        problemId: problem._id,
-        code,
-        isCorrect: allCorrect,
-      });
-      await solution.save();
-    }
+
     const student = await Student.findById(req.student.id);
     if (!student) {
       return res.status(404).json({
@@ -209,7 +198,7 @@ exports.checkSolution = async (req, res) => {
     if (student.balance === null) {
       student.balance = 0;
     }
-    if (allCorrect && (!existingSolution || !existingSolution.isCorrect)) {
+    if (allCorrect && es) {
       student.balance += problem.point;
     } else {
       console.log("Failed test case index", failedTestCaseIndex);
@@ -275,11 +264,6 @@ exports.testRunCode = async (req, res) => {
           "../tests",
           outputFileName
         )} && ${path.join(__dirname, "../tests", outputFileName)}`;
-        break;
-      case "html":
-      case "css":
-        fileName = `${timestamp}.html`;
-        command = `start ${path.join(__dirname, "../tests", fileName)}`;
         break;
       default:
         return res.status(400).json({
