@@ -38,7 +38,8 @@ exports.getAllStudentsHistory = async (req, res) => {
       model: "students",
       strictPopulate: false,
     });
-    return res.json({ data: students });
+    const result = students.reverse();
+    return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
