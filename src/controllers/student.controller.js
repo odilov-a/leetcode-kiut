@@ -33,18 +33,20 @@ exports.getAttemptByStudentId = async (req, res) => {
 
 exports.getAllStudentsHistory = async (req, res) => {
   try {
-    const students = await Attempt.find().populate({
+    const attempts = await Attempt.find().populate({
       path: "studentId",
       model: "students",
       strictPopulate: false,
     });
-    const result = students.reverse();
+    const result = attempts.reverse();
     return res.json({ data: result });
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
         uz: error.message,
+        ru: error.message,
+        en: error.message,
       },
     });
   }
