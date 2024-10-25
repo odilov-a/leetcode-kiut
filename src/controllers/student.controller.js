@@ -65,16 +65,8 @@ exports.getMeStudent = async (req, res) => {
         },
       });
     }
-    const token = sign({
-      id: student._id,
-      role: student.role,
-      username: student.username,
-      createdAt: student.createdAt,
-    });
     return res.status(200).json({
       data: {
-        token,
-        role: student.role,
         username: student.username,
         firstName: student.firstName,
         lastName: student.lastName,

@@ -29,16 +29,8 @@ exports.getMeAdmin = async (req, res) => {
         },
       });
     }
-    const token = sign({
-      id: admin._id,
-      role: admin.role,
-      username: admin.username,
-      createdAt: admin.createdAt,
-    });
     return res.status(200).json({
       data: {
-        token,
-        role: admin.role,
         username: admin.username,
       },
     });

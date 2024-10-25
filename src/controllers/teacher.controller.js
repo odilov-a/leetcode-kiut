@@ -79,16 +79,8 @@ exports.getMeTeacher = async (req, res) => {
         createdAt: sub.createdAt,
       };
     });
-    const token = sign({
-      id: teacher._id,
-      role: teacher.role,
-      username: teacher.username,
-      createdAt: teacher.createdAt,
-    });
     return res.status(200).json({
       data: {
-        token,
-        role: teacher.role,
         username: teacher.username,
         firstName: teacher.firstName,
         lastName: teacher.lastName,
