@@ -9,9 +9,9 @@ studentRouter.post("/register", studentController.registerStudent);
 
 studentRouter.get("/", authenticate, requireRole(["admin"]), studentController.getAllStudents);
 studentRouter.get("/me", authenticate, requireRole(["student"]), studentController.getMeStudent);
-studentRouter.get("/top/balance", authenticate, requireRole(["admin", "teacher"]), studentController.getTopStudentsByBalance);
+studentRouter.get("/top/balance", authenticate, requireRole(["admin", "teacher", "student"]), studentController.getTopStudentsByBalance);
 
-studentRouter.get("/histories", authenticate, requireRole(["admin","student", "teacher"]), studentController.getAllStudentsHistory);
+studentRouter.get("/histories", authenticate, requireRole(["admin", "student", "teacher"]), studentController.getAllStudentsHistory);
 studentRouter.put("/update-student", authenticate, requireRole(["student"]), studentController.meUpdateStudent);
 studentRouter.get("/:id/attempts", authenticate, requireRole(["admin", "teacher"]), studentController.getAttemptByStudentId);
 
