@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const filesSchema = new mongoose.Schema(
+const { Schema, model } = require("mongoose");
+const filesSchema = new Schema(
   {
     fileName: {
       type: String,
@@ -15,5 +15,5 @@ const filesSchema = new mongoose.Schema(
   }
 );
 
-const Files = mongoose.model("files", filesSchema);
+const Files = model("files", filesSchema);
 module.exports = Files;

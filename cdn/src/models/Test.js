@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const testSchema = new mongoose.Schema(
+const { Schema, model } = require("mongoose");
+const testSchema = new Schema(
   {
     fileName: {
       type: String,
@@ -15,5 +15,5 @@ const testSchema = new mongoose.Schema(
   }
 );
 
-const Test = mongoose.model("tests", testSchema);
+const Test = model("tests", testSchema);
 module.exports = Test;

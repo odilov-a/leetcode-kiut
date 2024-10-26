@@ -52,32 +52,6 @@ exports.upload = async (req, res) => {
       return res.status(200).json({ data: newFile });
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
-  }
-};
-
-exports.deleteFile = async (req, res) => {
-  try {
-    const file = await Files.findById(req.params.id);
-    if (!file) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Fayl topilmadi",
-          ru: "Файл не найден",
-          en: "File not found",
-        },
-      });
-    }
-    await file.deleteOne();
-    return res.json({ data: file });
-  } catch (error) {
     return res.status(500).json({
       status: "error",
       message: {
