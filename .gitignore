@@ -1,7 +1,5 @@
 # Dependency directories
 node_modules/
-.env
-
 uploads/
 
 src/tests/
