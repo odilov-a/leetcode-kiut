@@ -1,9 +1,5 @@
 # Dependency directories
 node_modules/
-uploads/
-
-src/tests/
-tests/
 
 # Backups
 backups/
