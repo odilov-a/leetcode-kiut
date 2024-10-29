@@ -1,6 +1,6 @@
+const Files = require("../models/File.js");
 const path = require("path");
 const multer = require("multer");
-const Files = require("../models/File.js");
 const mongoose = require("mongoose");
 
 exports.getFiles = async (req, res) => {
