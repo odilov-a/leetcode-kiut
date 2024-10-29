@@ -46,7 +46,7 @@ exports.upload = async (req, res) => {
       }
       const newFile = new Files({
         fileName: req.file.filename,
-        fileUrl: `http://localhost:5001/uploads/${req.file.filename}`,
+        fileUrl: `https://cdn.uzcontest.uz/uploads/${req.file.filename}`,
       });
       await newFile.save();
       return res.status(200).json({ data: newFile });
