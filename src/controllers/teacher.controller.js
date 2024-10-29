@@ -135,7 +135,18 @@ exports.registerTeacher = async (req, res) => {
       password: hashedPassword,
     });
     await teacher.save();
-    return res.status(201).json({ data: teacher });
+    const token = sign({
+      id: teacher._id,
+      role: teacher.role,
+      username: teacher.username,
+      createdAt: teacher.createdAt,
+    });
+    return res.status(201).json({
+      data: {
+        token,
+        teacher,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",

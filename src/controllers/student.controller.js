@@ -133,7 +133,18 @@ exports.registerStudent = async (req, res) => {
       password: hashedPassword,
     });
     await student.save();
-    return res.status(201).json({ data: student });
+    const token = sign({
+      id: student._id,
+      role: student.role,
+      username: student.username,
+      createdAt: student.createdAt,
+    });
+    return res.status(201).json({
+      data: {
+        token,
+        student,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
@@ -252,7 +263,6 @@ exports.updateStudent = async (req, res) => {
     }
     return res.json({ data: student });
   } catch (error) {
-    console.error(`Error updating student: ${error.message}`);
     return res.status(500).json({
       status: "error",
       message: {
