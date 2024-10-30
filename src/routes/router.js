@@ -5,6 +5,7 @@ const subjectRoutes = require("./subject.routes.js");
 const problemRoutes = require("./problem.routes.js");
 const teacherRoutes = require("./teacher.routes.js");
 const feedbackRoutes = require("./feedback.routes.js");
+const statisticsRoutes = require("./statistics.routes.js");
 const difficultyRoutes = require("./difficulty.routes.js");
 const translationRoutes = require("./translation.routes.js");
 const router = Router();
@@ -15,6 +16,7 @@ router.use("/problems", problemRoutes);
 router.use("/subjects", subjectRoutes);
 router.use("/teachers", teacherRoutes);
 router.use("/feedbacks", feedbackRoutes);
+router.use("/statistics", statisticsRoutes);
 router.use("/difficulties", difficultyRoutes);
 router.use("/translations", translationRoutes);
 
