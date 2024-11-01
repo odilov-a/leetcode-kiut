@@ -6,7 +6,7 @@ const { requireRole } = require("../middlewares/role.middleware.js");
 const problemRouter = Router();
 
 problemRouter.get("/", authenticate, problemController.getAllProblems);
-problemRouter.get("/search", problemController.searchProblems);
+problemRouter.get("/search", authenticate, problemController.searchProblems);
 problemRouter.post("/", authenticate, requireRole(["teacher", "admin"]), problemController.createProblem);
 
 problemRouter.get("/teacher/problems", authenticate, requireRole(["teacher", "admin"]), problemController.getAllProblemsByTeacher);
@@ -14,7 +14,7 @@ problemRouter.post("/run", authenticate, requireRole(["student", "teacher", "adm
 
 problemRouter.get("/difficulty/:difficulty", authenticate, problemController.getAllProblemsByDifficulty);
 problemRouter.get("/:subject/:difficulty", authenticate, problemController.getProblemsBySubjectAndDifficulty);
-problemRouter.get("/:id", problemController.getProblemById);
+problemRouter.get("/:id", authenticate, problemController.getProblemById);
 
 problemRouter.put("/:id", authenticate, requireRole(["teacher", "admin"]), problemController.updateProblem);
 problemRouter.delete("/:id", authenticate, requireRole(["teacher", "admin"]), problemController.deleteProblem);
