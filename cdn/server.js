@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 dotenv.config();
+require("../src/connection.js");
 const routes = require("./src/routes/router.js");
 const PORT = 5001;
 
