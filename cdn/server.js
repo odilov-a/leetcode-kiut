@@ -2,8 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 dotenv.config();
-require("../src/backup.js");
-require("../src/connection.js");
 const routes = require("./src/routes/router.js");
 const PORT = 5001;
 
@@ -19,7 +17,7 @@ app.get("/", (req, res) => {
 
 function startServerOnPort(port) {
   const listen = app.listen(port, () =>
-    console.log(`server is running ${port}`)
+    console.log(`File uploader is running on port ${port}`)
   );
   listen.on("error", () => {
     console.log(`Port ${port} is busy. Trying a different port...`);

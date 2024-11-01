@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 
 function startServerOnPort(port) {
   const listen = app.listen(port, () =>
-    console.log(`Server is running on port ${port}`)
+    console.log(`API is running on port ${port}`)
   );
   listen.on("error", (error) => {
     if (error.code === "EADDRINUSE") {

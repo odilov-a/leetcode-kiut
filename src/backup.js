@@ -1,4 +1,4 @@
-console.log("Backup Service is starting...");
+console.log("Backup script started successfully");
 const cron = require("node-cron");
 const { exec } = require("child_process");
 const fs = require("fs");

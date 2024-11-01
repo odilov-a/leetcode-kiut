@@ -13,7 +13,7 @@ mongoose
     socketTimeoutMS: 60000,        
     maxPoolSize: 10, 
   })
-  .then(() => console.log("mongodb connected"))
+  .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.log("db error", err.message));
 
 const logFolder = path.join(__dirname, "log");
