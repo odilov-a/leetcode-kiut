@@ -82,7 +82,7 @@ exports.getAllProblems = async (req, res) => {
         },
       };
     });
-    return res.json({ data: result });
+    return res.json({ data: result.reverse() });
   } catch (error) {
     return res.status(500).json({
       status: "error",
