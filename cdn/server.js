@@ -13,7 +13,7 @@ app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 app.use("/tests", express.static("tests"));
 app.get("/", (req, res) => {
-  return res.json({ message: "Server is run!" });
+  return res.json({ message: "CDN server is running!" });
 });
 
 function startServerOnPort(port) {
