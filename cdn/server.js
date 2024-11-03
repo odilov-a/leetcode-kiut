@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 
 function startServerOnPort(port) {
   const listen = app.listen(port, () =>
-    console.log(`File uploader is running on port ${port}`)
+    console.log(`Server is running on port ${port}`)
   );
   listen.on("error", () => {
     console.log(`Port ${port} is busy. Trying a different port...`);
