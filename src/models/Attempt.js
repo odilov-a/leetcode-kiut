@@ -4,11 +4,13 @@ const AttemptSchema = new Schema({
     type: Types.ObjectId,
     ref: "students",
     required: true,
+    index: true,
   },
   problemId: {
     type: Types.ObjectId,
     ref: "problems",
     required: true,
+    index: true,
   },
   code: {
     type: String,
@@ -22,7 +24,7 @@ const AttemptSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  timestamp: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

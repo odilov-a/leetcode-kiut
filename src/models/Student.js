@@ -33,9 +33,15 @@ const studentSchema = new Schema(
     history: [
       {
         type: Types.ObjectId,
-        ref: "problems",
+        refPath: "onModel",
+        index: true,
       },
     ],
+    onModel: {
+      type: String,
+      required: true,
+      enum: ["problems", "projects"],
+    },
     role: {
       type: String,
       default: "student",

@@ -3,10 +3,12 @@ const FeedbackSchema = new Schema({
   student: {
     type: Types.ObjectId,
     ref: "students",
+    index: true,
   },
   teacher: {
     type: Types.ObjectId,
     ref: "teachers",
+    index: true,
   },
   feedback: {
     type: String,

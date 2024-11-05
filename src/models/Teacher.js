@@ -14,6 +14,7 @@ const teacherSchema = new Schema(
         type: Types.ObjectId,
         ref: "subjects",
         required: true,
+        index: true,
       },
     ],
     password: {

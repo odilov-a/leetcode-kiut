@@ -1,0 +1,92 @@
+const Project = require("../models/Project.js");
+const Student = require("../models/Student.js");
+const Pereview = require("../models/Pereview.js");
+
+exports.submitProjectToPereview = async (req, res) => {
+  try {
+    const { projectId, projectUrl } = req.body;
+    const studentId = req.userId;
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    const pereview = new Pereview({
+      student: studentId,
+      project: projectId,
+      projectUrl,
+      isCorrect: false,
+    });
+    await pereview.save();
+    return res.status(201).json({ message: "Project submitted for review" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getPereview = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const pereview = await Pereview.findOne({ project: projectId });
+    if (!pereview) {
+      return res.status(404).json({ message: "Pereview not found" });
+    }
+    return res.status(200).json({ data: pereview });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getPereviewByReviewer = async (req, res) => {
+  try {
+    const { reviewerId } = req.params;
+    const pereview = await Pereview.findOne({ pereviewer: reviewerId });
+    if (!pereview) {
+      return res.status(404).json({ message: "Pereview not found" });
+    }
+    return res.status(200).json({ data: pereview });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getPereviewById = async (req, res) => {
+  try {
+    const pereview = await Pereview.findById(req.params.id);
+    if (!pereview) {
+      return res.status(404).json({ message: "Pereview not found" });
+    }
+    return res.status(200).json({ data: pereview });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updatePereview = async (req, res) => {
+  try {
+    const { isCorrect } = req.body;
+    const updatedPereview = await Pereview.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedPereview) {
+      return res.status(404).json({ message: "Pereview not found" });
+    }
+    const studentId = updatedPereview.student;
+    if (isCorrect && !updatedPereview.isCorrect) {
+      const project = await Project.findById(updatedPereview.project);
+      if (project) {
+        await Student.findByIdAndUpdate(studentId, {
+          $inc: { balance: project.point },
+        });
+      }
+    }
+    return res.status(200).json({ data: updatedPereview });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

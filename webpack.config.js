@@ -19,7 +19,7 @@ module.exports = {
         test: /\.ejs$/,
         use: [
           {
-            loader: 'ejs-loader',
+            loader: "ejs-loader",
             options: {
               esModule: false,
             },
@@ -30,9 +30,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [
-        { from: "frontend/template", to: "frontend/template" },
-      ],
+      patterns: [{ from: "frontend/template", to: "frontend/template" }],
     }),
   ],
 };
