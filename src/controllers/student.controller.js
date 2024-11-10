@@ -54,7 +54,7 @@ exports.getAllStudentsHistory = async (req, res) => {
 
 exports.getMeStudent = async (req, res) => {
   try {
-    const student = await Student.findById(req.student.id).populate("history");
+    const student = await Student.findById(req.student.id).populate("problemsHistory");
     if (!student) {
       return res.status(404).json({
         status: "error",
