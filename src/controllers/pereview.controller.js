@@ -93,7 +93,7 @@ exports.updatePereview = async (req, res) => {
     const { isCorrect } = req.body;
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { isCorrect, isMarked: true },
       { new: true }
     );
     if (!updatedPereview) {
