@@ -33,6 +33,22 @@ exports.submitProjectToPereview = async (req, res) => {
   }
 };
 
+exports.getRandomProjectForReview = async (req, res) => {
+  try {
+    const pendingProjects = await Pereview.find({ isCorrect: false });
+    if (pendingProjects.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No projects available for review" });
+    }
+    const randomIndex = Math.floor(Math.random() * pendingProjects.length);
+    const randomProject = pendingProjects[randomIndex];
+    return res.status(200).json({ data: randomProject });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getPereview = async (req, res) => {
   try {
     const { projectId } = req.params;

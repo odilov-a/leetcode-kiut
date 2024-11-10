@@ -14,4 +14,6 @@ pereviewRouter.get("/:id", authenticate, pereviewController.getPereviewById);
 
 pereviewRouter.put("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.updatePereview);
 
+pereviewRouter.get("/random", authenticate, requireRole(["student"]), pereviewController.getRandomProjectForReview);
+
 module.exports = pereviewRouter;
