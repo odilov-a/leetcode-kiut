@@ -5,6 +5,12 @@ const Pereview = require("../models/Pereview.js");
 exports.submitProjectToPereview = async (req, res) => {
   try {
     const { projectId, projectUrl } = req.body;
+    const urlPattern = new RegExp(
+      /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/
+    );
+    if (!urlPattern.test(projectUrl)) {
+      return res.status(400).json({ message: "Invalid project URL" });
+    }
     const studentId = req.userId;
     const student = await Student.findById(studentId);
     if (!student) {
