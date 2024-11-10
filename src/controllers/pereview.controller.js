@@ -36,7 +36,11 @@ exports.submitProjectToPereview = async (req, res) => {
 
 exports.getRandomProjectForReview = async (req, res) => {
   try {
-    const pendingProjects = await Pereview.find({ isMarked: false });
+    const studentId = req.userId;
+    const pendingProjects = await Pereview.find({ 
+      isMarked: false, 
+      student: { $ne: studentId }
+    });
     if (pendingProjects.length === 0) {
       return res
         .status(404)
