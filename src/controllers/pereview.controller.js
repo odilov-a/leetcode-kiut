@@ -25,6 +25,7 @@ exports.submitProjectToPereview = async (req, res) => {
       project: projectId,
       projectUrl,
       isCorrect: false,
+      isMarked: false,
     });
     await pereview.save();
     return res.status(201).json({ message: "Project submitted for review" });
@@ -35,7 +36,7 @@ exports.submitProjectToPereview = async (req, res) => {
 
 exports.getRandomProjectForReview = async (req, res) => {
   try {
-    const pendingProjects = await Pereview.find({ isCorrect: false });
+    const pendingProjects = await Pereview.find({ isMarked: false });
     if (pendingProjects.length === 0) {
       return res
         .status(404)
