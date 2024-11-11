@@ -54,32 +54,6 @@ exports.getRandomProjectForReview = async (req, res) => {
   }
 };
 
-exports.getPereview = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-    const pereview = await Pereview.findOne({ project: projectId });
-    if (!pereview) {
-      return res.status(404).json({ message: "Pereview not found" });
-    }
-    return res.status(200).json({ data: pereview });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-exports.getPereviewByReviewer = async (req, res) => {
-  try {
-    const { reviewerId } = req.params;
-    const pereview = await Pereview.findOne({ pereviewer: reviewerId });
-    if (!pereview) {
-      return res.status(404).json({ message: "Pereview not found" });
-    }
-    return res.status(200).json({ data: pereview });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
 exports.getPereviewById = async (req, res) => {
   try {
     const pereview = await Pereview.findById(req.params.id);
