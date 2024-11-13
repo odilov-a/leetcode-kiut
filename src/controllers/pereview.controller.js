@@ -2,12 +2,40 @@ const Project = require("../models/Project.js");
 const Student = require("../models/Student.js");
 const Pereview = require("../models/Pereview.js");
 
+const getLanguageField = (lang, type) => {
+  switch (type) {
+    case "title":
+      switch (lang) {
+        case "uz":
+          return "titleUz";
+        case "ru":
+          return "titleRu";
+        case "en":
+          return "titleEn";
+        default:
+          return null;
+      }
+    case "description":
+      switch (lang) {
+        case "uz":
+          return "descriptionUz";
+        case "ru":
+          return "descriptionRu";
+        case "en":
+          return "descriptionEn";
+        default:
+          return null;
+      }
+    default:
+      return null;
+  }
+};
+
 exports.submitProjectToPereview = async (req, res) => {
   try {
     const { projectId, projectUrl } = req.body;
-    const urlPattern = new RegExp(
-      /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/
-    );
+    const urlPattern =
+      /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/;
     if (!urlPattern.test(projectUrl)) {
       return res.status(400).json({ message: "Invalid project URL" });
     }
@@ -26,6 +54,7 @@ exports.submitProjectToPereview = async (req, res) => {
       projectUrl,
       isCorrect: false,
       isMarked: false,
+      pereviewer: req.userId,
     });
     await pereview.save();
     return res.status(201).json({ message: "Project submitted for review" });
@@ -37,9 +66,9 @@ exports.submitProjectToPereview = async (req, res) => {
 exports.getRandomProjectForReview = async (req, res) => {
   try {
     const studentId = req.userId;
-    const pendingProjects = await Pereview.find({ 
-      isMarked: false, 
-      student: { $ne: studentId }
+    const pendingProjects = await Pereview.find({
+      isMarked: false,
+      student: { $ne: studentId },
     });
     if (pendingProjects.length === 0) {
       return res
@@ -56,8 +85,40 @@ exports.getRandomProjectForReview = async (req, res) => {
 
 exports.getAllMarkedPereviews = async (req, res) => {
   try {
-    const pereviews = await Pereview.find({ isMarked: true });
-    return res.status(200).json({ data: pereviews });
+    const { lang } = req.query;
+    const titleFieldName = getLanguageField(lang, "title");
+    const descriptionFieldName = getLanguageField(lang, "description");
+    if (lang && (!titleFieldName || !descriptionFieldName)) {
+      return res.status(400).json({
+        status: "error",
+        message: {
+          uz: "Noto'g'ri til so'rovi",
+          ru: "Неверный запрос языка",
+          en: "Invalid language request",
+        },
+      });
+    }
+    const pereviews = await Pereview.find({ isMarked: true })
+      .populate("student")
+      .populate("project")
+      .populate("pereviewer");
+    const result = pereviews.map((pereview) => {
+      const project = pereview.project;
+      return {
+        _id: pereview._id,
+        student: pereview.student,
+        pereviewer: pereview.pereviewer,
+        projectUrl: pereview.projectUrl,
+        isCorrect: pereview.isCorrect,
+        isMarked: pereview.isMarked,
+        createdAt: pereview.createdAt,
+        title: titleFieldName ? project[titleFieldName] : project.titleEn,
+        description: descriptionFieldName
+          ? project[descriptionFieldName]
+          : project.descriptionEn,
+      };
+    });
+    return res.status(200).json({ data: result });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -80,7 +141,7 @@ exports.updatePereview = async (req, res) => {
     const { isCorrect } = req.body;
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      { isCorrect, isMarked: true },
+      { isCorrect, isMarked: true, pereviewer: req.userId },
       { new: true }
     );
     if (!updatedPereview) {
