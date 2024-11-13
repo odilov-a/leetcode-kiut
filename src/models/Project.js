@@ -29,6 +29,10 @@ const projectSchema = new Schema(
       type: Number,
       required: true,
     },
+    pointForPereviwer: {
+      type: Number,
+      required: true,
+    },
     tutorials: {
       type: String,
       required: true,

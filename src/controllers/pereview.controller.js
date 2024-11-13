@@ -54,6 +54,15 @@ exports.getRandomProjectForReview = async (req, res) => {
   }
 };
 
+exports.getAllMarkedPereviews = async (req, res) => {
+  try {
+    const pereviews = await Pereview.find({ isMarked: true });
+    return res.status(200).json({ data: pereviews });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.getPereviewById = async (req, res) => {
   try {
     const pereview = await Pereview.findById(req.params.id);
@@ -78,12 +87,18 @@ exports.updatePereview = async (req, res) => {
       return res.status(404).json({ message: "Pereview not found" });
     }
     const studentId = updatedPereview.student;
+    const reviewerId = updatedPereview.pereviewer;
     if (isCorrect && !updatedPereview.isCorrect) {
       const project = await Project.findById(updatedPereview.project);
       if (project) {
         await Student.findByIdAndUpdate(studentId, {
           $inc: { balance: project.point },
         });
+        if (reviewerId) {
+          await Student.findByIdAndUpdate(reviewerId, {
+            $inc: { balance: project.pointForPereviwer },
+          });
+        }
       }
     }
     return res.status(200).json({ data: updatedPereview });

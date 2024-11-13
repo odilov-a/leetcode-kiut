@@ -44,6 +44,10 @@ const studentSchema = new Schema(
         index: true,
       },
     ],
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     role: {
       type: String,
       default: "student",

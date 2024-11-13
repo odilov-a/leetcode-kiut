@@ -54,7 +54,9 @@ exports.getAllStudentsHistory = async (req, res) => {
 
 exports.getMeStudent = async (req, res) => {
   try {
-    const student = await Student.findById(req.student.id).populate("problemsHistory");
+    const student = await Student.findById(req.student.id).populate(
+      "problemsHistory"
+    );
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -73,6 +75,7 @@ exports.getMeStudent = async (req, res) => {
         balance: student.balance,
         phoneNumber: student.phoneNumber,
         photoUrl: student.photoUrl,
+        isActive: student.isActive,
       },
     });
   } catch (error) {
@@ -191,6 +194,7 @@ exports.loginStudent = async (req, res) => {
         token,
         role: student.role,
         username: student.username,
+        isActive: student.isActive,
       },
     });
   } catch (error) {
