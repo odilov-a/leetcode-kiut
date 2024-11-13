@@ -67,6 +67,7 @@ exports.getAllProjects = async (req, res) => {
           ? project[descriptionFieldName]
           : project.descriptionEn,
         point: project.point,
+        pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
         subject: {
           _id: project.subject._id,
@@ -126,10 +127,8 @@ exports.getProjectById = async (req, res) => {
         title: titles[lang],
         description: descriptions[lang],
         point: project.point,
+        pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
-        testCases: project.testCases,
-        timeLimit: project.timeLimit,
-        memoryLimit: project.memoryLimit,
         subject: {
           _id: project.subject?._id,
           title: subjectTitles[lang],
@@ -196,6 +195,7 @@ exports.getProjectByTeacherId = async (req, res) => {
           ? project[descriptionFieldName]
           : project.descriptionEn,
         point: project.point,
+        pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
         subject: {
           _id: project.subject._id,
@@ -262,6 +262,7 @@ exports.searchProjects = async (req, res) => {
           ? project[descriptionFieldName]
           : project.descriptionEn,
         point: project.point,
+        pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
         subject: {
           _id: project.subject._id,
