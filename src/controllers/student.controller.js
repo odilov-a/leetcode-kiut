@@ -19,14 +19,17 @@ exports.getAllStudents = async (req, res) => {
 
 exports.searchStudents = async (req, res) => {
   try {
-    const query = req.query.q ? String(req.query.q) : "";
-    const students = await Student.find({
-      $or: [
-        { username: { $regex: query, $options: "i" } },
-        { firstName: { $regex: query, $options: "i" } },
-        { lastName: { $regex: query, $options: "i" } },
-      ],
-    });
+    const students = await Student.findOne({ username: req.params.username });
+    if (!students) {
+      return res.status(404).json({
+        status: "error",
+        message: {
+          uz: "Student topilmadi",
+          ru: "Студент не найден",
+          en: "Student not found",
+        },
+      });
+    }
     return res.json({ data: students });
   } catch (error) {
     return res.status(500).json({
