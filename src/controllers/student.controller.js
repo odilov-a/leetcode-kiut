@@ -17,6 +17,26 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
+exports.searchStudents = async (req, res) => {
+  try {
+    const students = await Student.find({
+      $or: [
+        { username: { $regex: req.query.q, $options: "i" } },
+        { firstName: { $regex: req.query.q, $options: "i" } },
+        { lastName: { $regex: req.query.q, $options: "i" } },
+      ],
+    });
+    return res.json({ data: students });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: {
+        uz: error.message,
+      },
+    });
+  }
+};
+
 exports.getAttemptByStudentId = async (req, res) => {
   try {
     const attempts = await Attempt.find({ studentId: req.params.id });
