@@ -104,9 +104,16 @@ exports.getAllMarkedPereviews = async (req, res) => {
       .populate("pereviewer");
     const result = pereviews.map((pereview) => {
       const project = pereview.project;
+      const student = pereview.student;
       return {
         _id: pereview._id,
-        student: pereview.student,
+        student: {
+          isActive: student.isActive,
+          username: student.username,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          phoneNumber: student.phoneNumber,
+        },
         pereviewer: pereview.pereviewer,
         projectUrl: pereview.projectUrl,
         isCorrect: pereview.isCorrect,
@@ -118,7 +125,7 @@ exports.getAllMarkedPereviews = async (req, res) => {
           : project.descriptionEn,
       };
     });
-    return res.status(200).json({ data: result });
+    return res.status(200).json({ data: result.reverse() });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
