@@ -19,11 +19,12 @@ exports.getAllStudents = async (req, res) => {
 
 exports.searchStudents = async (req, res) => {
   try {
+    const query = req.query.q ? String(req.query.q) : "";
     const students = await Student.find({
       $or: [
-        { username: { $regex: req.query.q, $options: "i" } },
-        { firstName: { $regex: req.query.q, $options: "i" } },
-        { lastName: { $regex: req.query.q, $options: "i" } },
+        { username: { $regex: query, $options: "i" } },
+        { firstName: { $regex: query, $options: "i" } },
+        { lastName: { $regex: query, $options: "i" } },
       ],
     });
     return res.json({ data: students });
