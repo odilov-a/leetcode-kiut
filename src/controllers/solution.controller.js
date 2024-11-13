@@ -203,14 +203,14 @@ exports.checkSolution = async (req, res) => {
     } else {
       console.log("Failed test case index", failedTestCaseIndex);
     }
-    student.problemsHistory.push(problem._id);
+    student.history.push(problem._id);
     await student.save();
     fs.unlinkSync(path.join(__dirname, "../tests", fileName));
     return res.json({
       data: {
         correct: allCorrect,
         balance: student.balance,
-        history: student.problemsHistory,
+        history: student.history,
       },
     });
   } catch (error) {

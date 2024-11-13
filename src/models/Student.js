@@ -30,17 +30,10 @@ const studentSchema = new Schema(
         type: String,
       },
     ],
-    problemsHistory: [
+    history: [
       {
         type: Types.ObjectId,
         ref: "problems",
-        index: true,
-      },
-    ],
-    projectsHistory: [
-      {
-        type: Types.ObjectId,
-        ref: "projects",
         index: true,
       },
     ],

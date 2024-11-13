@@ -9,7 +9,6 @@ studentRouter.post("/register", studentController.registerStudent);
 
 studentRouter.get("/", authenticate, requireRole(["admin"]), studentController.getAllStudents);
 studentRouter.get("/me", authenticate, requireRole(["student"]), studentController.getMeStudent);
-studentRouter.get("/search", authenticate, requireRole(["admin"]), studentController.searchStudents);
 studentRouter.get("/top/balance", authenticate, requireRole(["admin", "teacher", "student"]), studentController.getTopStudentsByBalance);
 
 studentRouter.get("/histories", authenticate, requireRole(["admin", "student", "teacher"]), studentController.getAllStudentsHistory);

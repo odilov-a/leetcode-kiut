@@ -17,30 +17,6 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
-exports.searchStudents = async (req, res) => {
-  try {
-    const students = await Student.findOne({ username: req.params.username });
-    if (!students) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
-    }
-    return res.json({ data: students });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
-  }
-};
-
 exports.getAttemptByStudentId = async (req, res) => {
   try {
     const attempts = await Attempt.find({ studentId: req.params.id });
@@ -79,7 +55,7 @@ exports.getAllStudentsHistory = async (req, res) => {
 exports.getMeStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.student.id).populate(
-      "problemsHistory"
+      "history"
     );
     if (!student) {
       return res.status(404).json({
