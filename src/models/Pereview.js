@@ -7,6 +7,12 @@ const pereviewSchema = new Schema(
       required: true,
       index: true,
     },
+    teacher: {
+      type: Types.ObjectId,
+      ref: "teachers",
+      required: true,
+      index: true,
+    },
     project: {
       type: Types.ObjectId,
       ref: "projects",

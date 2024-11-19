@@ -10,5 +10,6 @@ pereviewRouter.get("/status", authenticate, requireRole(["student"]), pereviewCo
 pereviewRouter.post("/", authenticate, requireRole(["student"]), pereviewController.submitProjectToPereview);
 pereviewRouter.get("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.getPereviewById);
 pereviewRouter.put("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.updatePereview);
+pereviewRouter.put("/teacher/:id", authenticate, requireRole(["teacher"]), pereviewController.updateIsTeacherMarked);
 
 module.exports = pereviewRouter;
