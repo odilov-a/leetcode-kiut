@@ -8,5 +8,4 @@ statisticsRouter.get("/languages", authenticate, requireRole(["admin"]), statist
 statisticsRouter.get("/accuracy", authenticate, requireRole(["admin"]), statisticsController.submissionAccuracyByLanguage);
 statisticsRouter.get("/average-accuracy", authenticate, requireRole(["admin"]), statisticsController.averageAccuracyPerLanguage);
 
-
 module.exports = statisticsRouter;

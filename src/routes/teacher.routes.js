@@ -12,8 +12,8 @@ teacherRouter.put("/update-teacher", authenticate, requireRole(["teacher"]), tea
 teacherRouter.put("/:id", authenticate, requireRole(["admin", "teacher"]), teacherController.updateTeacher);
 teacherRouter.delete("/:id", authenticate, requireRole(["admin"]), teacherController.deleteTeacher);
 
-teacherRouter.get("/", authenticate, requireRole(["teacher", "admin", "student"]), teacherController.getAllTeachers);
-teacherRouter.get("/me", authenticate, requireRole(["teacher", "admin", "student"]), teacherController.getMeTeacher);
-teacherRouter.get("/:id", authenticate, requireRole(["teacher", "admin", "student"]), teacherController.getTeacherById);
+teacherRouter.get("/", authenticate, requireRole(["teacher", "admin"]), teacherController.getAllTeachers);
+teacherRouter.get("/me", authenticate, requireRole(["teacher"]), teacherController.getMeTeacher);
+teacherRouter.get("/:id", authenticate, requireRole(["teacher", "admin"]), teacherController.getTeacherById);
 
 module.exports = teacherRouter;
