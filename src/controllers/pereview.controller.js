@@ -175,11 +175,6 @@ exports.updatePereview = async (req, res) => {
   try {
     const pereviewerId = req.userId;
     const { isCorrect, isTeacherMarked } = req.body;
-    if (!isTeacherMarked) {
-      return res.status(400).json({
-        message: "Teacher has not marked this review yet. Status is pending.",
-      });
-    }
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
       { isCorrect, isMarked: true, isTeacherMarked, pereviewer: pereviewerId },
