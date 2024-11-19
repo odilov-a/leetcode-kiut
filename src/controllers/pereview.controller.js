@@ -31,6 +31,31 @@ const getLanguageField = (lang, type) => {
   }
 };
 
+exports.getPereviewsStutus = async (req, res) => {
+  try {
+    const studentId = req.userId;
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    const pereviews = await Pereview.find({ student: studentId });
+    const result = pereviews.map((pereview) => {
+      return {
+        _id: pereview._id,
+        projectUrl: pereview.projectUrl,
+        isCorrect: pereview.isCorrect,
+        isMarked: pereview.isMarked,
+        isTeacherMarked: pereview.isTeacherMarked,
+        pereviewer: pereview.pereviewer,
+        createdAt: pereview.createdAt,
+      };
+    });
+    return res.status(200).json({ data: result.reverse() });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.submitProjectToPereview = async (req, res) => {
   try {
     const { projectId, projectUrl } = req.body;
@@ -40,6 +65,7 @@ exports.submitProjectToPereview = async (req, res) => {
       return res.status(400).json({ message: "Invalid project URL" });
     }
     const studentId = req.userId;
+    const pereviewerId = req.userId;
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -54,7 +80,8 @@ exports.submitProjectToPereview = async (req, res) => {
       projectUrl,
       isCorrect: false,
       isMarked: false,
-      pereviewer: req.userId,
+      isTeacherMarked: false,
+      pereviewer: pereviewerId,
     });
     await pereview.save();
     return res.status(201).json({ message: "Project submitted for review" });
@@ -115,6 +142,7 @@ exports.getAllMarkedPereviews = async (req, res) => {
           phoneNumber: student.phoneNumber,
         },
         pereviewer: pereview.pereviewer,
+        isTeacherMarked: pereview.isTeacherMarked,
         projectUrl: pereview.projectUrl,
         isCorrect: pereview.isCorrect,
         isMarked: pereview.isMarked,
@@ -145,25 +173,30 @@ exports.getPereviewById = async (req, res) => {
 
 exports.updatePereview = async (req, res) => {
   try {
-    const { isCorrect } = req.body;
+    const pereviewerId = req.userId;
+    const { isCorrect, isTeacherMarked } = req.body;
+    if (!isTeacherMarked) {
+      return res.status(400).json({
+        message: "Teacher has not marked this review yet. Status is pending.",
+      });
+    }
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      { isCorrect, isMarked: true, pereviewer: req.userId },
+      { isCorrect, isMarked: true, isTeacherMarked, pereviewer: pereviewerId },
       { new: true }
     );
     if (!updatedPereview) {
       return res.status(404).json({ message: "Pereview not found" });
     }
     const studentId = updatedPereview.student;
-    const reviewerId = updatedPereview.pereviewer;
-    if (isCorrect && !updatedPereview.isCorrect) {
+    if (isCorrect) {
       const project = await Project.findById(updatedPereview.project);
       if (project) {
         await Student.findByIdAndUpdate(studentId, {
           $inc: { balance: project.point },
         });
-        if (reviewerId) {
-          await Student.findByIdAndUpdate(reviewerId, {
+        if (pereviewerId) {
+          await Student.findByIdAndUpdate(pereviewerId, {
             $inc: { balance: project.pointForPereviwer },
           });
         }
@@ -174,3 +207,35 @@ exports.updatePereview = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// exports.updatePereview = async (req, res) => {
+//   try {
+//     const pereviewerId = req.userId;
+//     const studentId = req.userId;
+//     const { isCorrect, isTeacherMarked } = req.body;
+//     const updatedPereview = await Pereview.findByIdAndUpdate(
+//       req.params.id,
+//       { isCorrect, isMarked: true, isTeacherMarked, pereviewerId },
+//       { new: true }
+//     );
+//     if (!updatedPereview) {
+//       return res.status(404).json({ message: "Pereview not found" });
+//     }
+//     if (isCorrect && !updatedPereview.isCorrect) {
+//       const project = await Project.findById(updatedPereview.project);
+//       if (project) {
+//         await Student.findByIdAndUpdate(studentId, {
+//           $inc: { balance: project.point },
+//         });
+//         if (pereviewerId) {
+//           await Student.findByIdAndUpdate(pereviewerId, {
+//             $inc: { balance: project.pointForPereviwer },
+//           });
+//         }
+//       }
+//     }
+//     return res.status(200).json({ data: updatedPereview });
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };

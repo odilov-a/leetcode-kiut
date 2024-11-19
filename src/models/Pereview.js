@@ -26,6 +26,10 @@ const pereviewSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    isTeacherMarked: {
+      type: Boolean,
+      required: true,
+    },
     projectUrl: {
       type: String,
       required: true,

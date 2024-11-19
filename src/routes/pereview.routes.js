@@ -6,8 +6,9 @@ const pereviewRouter = Router();
 
 pereviewRouter.get("/marked", authenticate, requireRole(["teacher", "admin"]), pereviewController.getAllMarkedPereviews);
 pereviewRouter.get("/random", authenticate, requireRole(["student"]), pereviewController.getRandomProjectForReview);
+pereviewRouter.get("/status", authenticate, requireRole(["student"]), pereviewController.getPereviewsStutus);
 pereviewRouter.post("/", authenticate, requireRole(["student"]), pereviewController.submitProjectToPereview);
-pereviewRouter.get("/:id", authenticate, pereviewController.getPereviewById);
+pereviewRouter.get("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.getPereviewById);
 pereviewRouter.put("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.updatePereview);
 
 module.exports = pereviewRouter;
