@@ -209,6 +209,19 @@ exports.updatePereview = async (req, res) => {
   }
 };
 
+exports.getPereviewByTeacherId = async (req, res) => {
+  try {
+    const teacherId = req.userId;
+    const pereviews = await Pereview.find({ teacher: teacherId });
+    if (!pereviews) {
+      return res.status(404).json({ message: "Pereviews not found" });
+    }
+    return res.status(200).json({ data: pereviews });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.updateIsTeacherMarked = async (req, res) => {
   try {
     const pereview = await Pereview.findByIdAndUpdate(

@@ -8,6 +8,7 @@ pereviewRouter.get("/marked", authenticate, requireRole(["teacher", "admin"]), p
 pereviewRouter.get("/random", authenticate, requireRole(["student"]), pereviewController.getRandomProjectForReview);
 pereviewRouter.get("/status", authenticate, requireRole(["student"]), pereviewController.getPereviewsStutus);
 pereviewRouter.post("/", authenticate, requireRole(["student"]), pereviewController.submitProjectToPereview);
+pereviewRouter.get("/teacher", authenticate, requireRole(["teacher"]), pereviewController.getPereviewByTeacherId);
 pereviewRouter.get("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.getPereviewById);
 pereviewRouter.put("/:id", authenticate, requireRole(["teacher", "admin", "student"]), pereviewController.updatePereview);
 pereviewRouter.put("/teacher/:id", authenticate, requireRole(["teacher"]), pereviewController.updateIsTeacherMarked);
