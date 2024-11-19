@@ -71,10 +71,6 @@ exports.submitProjectToPereview = async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    const teacher = await Pereview.findById(teacherId);
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
