@@ -58,7 +58,7 @@ exports.getPereviewsStutus = async (req, res) => {
 
 exports.submitProjectToPereview = async (req, res) => {
   try {
-    const { projectId, projectUrl } = req.body;
+    const { projectId, projectUrl, teacher } = req.body;
     const urlPattern =
       /^(https?:\/\/)?(www\.)?(github|gitlab)\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/;
     if (!urlPattern.test(projectUrl)) {
@@ -66,7 +66,6 @@ exports.submitProjectToPereview = async (req, res) => {
     }
     const studentId = req.userId;
     const pereviewerId = req.userId;
-    const teacherId = req.userId;
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -83,7 +82,7 @@ exports.submitProjectToPereview = async (req, res) => {
       isMarked: false,
       isTeacherMarked: false,
       pereviewer: pereviewerId,
-      teacher: teacherId,
+      teacher,
     });
     await pereview.save();
     return res.status(201).json({ message: "Project submitted for review" });

@@ -69,6 +69,8 @@ exports.getAllProjects = async (req, res) => {
         point: project.point,
         pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
+        teacher: project.teacher,
+        admin: project.admin,
         subject: {
           _id: project.subject._id,
           title: subjectTitle,
@@ -129,6 +131,8 @@ exports.getProjectById = async (req, res) => {
         point: project.point,
         pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
+        teacher: project.teacher,
+        admin: project.admin,
         subject: {
           _id: project.subject?._id,
           title: subjectTitles[lang],
@@ -197,6 +201,8 @@ exports.getProjectByTeacherId = async (req, res) => {
         point: project.point,
         pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
+        teacher: project.teacher,
+        admin: project.admin,
         subject: {
           _id: project.subject._id,
           title: subjectTitle,
@@ -264,6 +270,8 @@ exports.searchProjects = async (req, res) => {
         point: project.point,
         pointForPereviwer: project.pointForPereviwer,
         tutorials: project.tutorials,
+        teacher: project.teacher,
+        admin: project.admin,
         subject: {
           _id: project.subject._id,
           title: subjectTitle,
