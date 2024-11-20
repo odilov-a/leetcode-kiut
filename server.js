@@ -6,6 +6,7 @@ require("./src/backup.js");
 require("./src/connection.js");
 const routes = require("./src/routes/router.js");
 const ejsRoutes = require("./frontend/routes/ejsRoutes.js");
+const { setupSocket } = require("./src/utils/socket.js");
 
 const API_PORT = 5000;
 const EJS_PORT = 5002;
@@ -18,26 +19,35 @@ apiApp.get("/", (req, res) => {
   return res.json({ message: "API server is running!" });
 });
 
-function startServerOnPort(app, port) {
-  const listen = app.listen(port, () =>
-    console.log(`Server is running on port ${port}`)
-  );
+const apiServer = require("http").createServer(apiApp);
+const io = require("socket.io")(apiServer);
+setupSocket(io);
+apiApp.set("io", io);
+
+function startServerOnPort(server, appName, port) {
+  const listen = server.listen(port, () => {
+    console.log(`${appName} is running on port ${port}`);
+  });
   listen.on("error", (error) => {
     if (error.code === "EADDRINUSE") {
-      console.log(`Port ${port} is busy. Trying a different port...`);
-      startServerOnPort(app, port + 1);
+      console.log(
+        `Port ${port} is busy. Trying a different port for ${appName}...`
+      );
+      startServerOnPort(server, appName, port + 1);
     } else {
-      console.error(`Server error: ${error.message}`);
+      console.error(`${appName} error: ${error.message}`);
     }
   });
 }
 
-startServerOnPort(apiApp, API_PORT);
+startServerOnPort(apiServer, "API Server", API_PORT);
 
 const ejsApp = express();
 ejsApp.set("view engine", "ejs");
 ejsApp.set("views", "./frontend/template");
 ejsApp.use("/", ejsRoutes);
 
-startServerOnPort(ejsApp, EJS_PORT);
+const ejsServer = require("http").createServer(ejsApp);
+startServerOnPort(ejsServer, "EJS Server", EJS_PORT);
+
 module.exports = { apiApp, ejsApp };
