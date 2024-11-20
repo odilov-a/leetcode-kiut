@@ -1,23 +1,12 @@
 const { Schema, model, Types } = require("mongoose");
-
 const chatSchema = new Schema(
   {
     senderId: {
       type: Types.ObjectId,
       required: true,
     },
-    senderRole: {
-      type: String,
-      enum: ["student", "teacher", "admin"],
-      required: true,
-    },
     receiverId: {
       type: Types.ObjectId,
-      required: true,
-    },
-    receiverRole: {
-      type: String,
-      enum: ["student", "teacher", "admin"],
       required: true,
     },
     message: {
@@ -37,5 +26,5 @@ const chatSchema = new Schema(
   { versionKey: false }
 );
 
-const Chat = model("Chat", chatSchema);
+const Chat = model("chats", chatSchema);
 module.exports = Chat;
