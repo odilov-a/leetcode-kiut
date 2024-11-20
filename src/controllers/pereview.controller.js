@@ -208,13 +208,35 @@ exports.getPereviewByTeacherId = async (req, res) => {
   try {
     const teacherId = req.userId;
     const pereviews = await Pereview.find({ teacher: teacherId })
-      .populate("pereviewer")
-      .populate("student")
-      .populate("project");
+      .populate("pereviewer", "firstName lastName")
+      .populate("student", "firstName lastName")
+      .populate("project", "titleUz titleRu titleEn");
     if (!pereviews) {
       return res.status(404).json({ message: "Pereviews not found" });
     }
-    return res.status(200).json({ data: pereviews });
+    const result = pereviews.map((pereview) => {
+      const projectTitle = pereview.project.titleEn;
+      return {
+        _id: pereview._id,
+        createdAt: pereview.createdAt,
+        isCorrect: pereview.isCorrect,
+        isMarked: pereview.isMarked,
+        isTeacherMarked: pereview.isTeacherMarked,
+        projectUrl: pereview.projectUrl,
+        pereviewer: {
+          firstName: pereview.pereviewer.firstName,
+          lastName: pereview.pereviewer.lastName,
+        },
+        project: {
+          title: projectTitle,
+        },
+        student: {
+          firstName: pereview.student.firstName,
+          lastName: pereview.student.lastName,
+        },
+      };
+    });
+    return res.status(200).json({ data: result });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
