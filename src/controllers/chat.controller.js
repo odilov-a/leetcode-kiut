@@ -5,8 +5,12 @@ const Admin = require("../models/Admin.js");
 
 exports.getAllTeachersStudentsAdmins = async (req, res) => {
   try {
-    const teachers = await Teacher.find().select("firstName lastName username role photoUrl");
-    const students = await Student.find().select("firstName lastName username role photoUrl");
+    const teachers = await Teacher.find().select(
+      "firstName lastName username role photoUrl"
+    );
+    const students = await Student.find().select(
+      "firstName lastName username role photoUrl"
+    );
     const admins = await Admin.find().select("username role");
     return res.status(200).json({ data: { teachers, students, admins } });
   } catch (error) {
@@ -51,6 +55,7 @@ exports.createChat = async (req, res) => {
       photoUrls: req.body.photoUrls,
     });
     const savedChat = await chat.save();
+    req.app.get("io").emit("chat message", newChat);
     return res.status(201).json({ data: savedChat });
   } catch (error) {
     return res.status(500).json({
