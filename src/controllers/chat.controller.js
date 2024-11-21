@@ -55,7 +55,8 @@ exports.createChat = async (req, res) => {
       photoUrls: req.body.photoUrls,
     });
     const savedChat = await chat.save();
-    req.app.get("io").emit("chat message", savedChat);
+    const io = req.app.get("io");
+    io.to(req.body.receiverId).emit("newMessage", savedChat);
     return res.status(201).json({ data: savedChat });
   } catch (error) {
     return res.status(500).json({
