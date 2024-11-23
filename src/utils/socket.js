@@ -13,6 +13,7 @@ const setupSocket = (io) => {
       const room = `room_${senderId}_${receiverId}`;
       const timestamp = new Date().toISOString();
       io.to(room).emit("newPrivateMessage", { message, senderId, timestamp });
+      socket.emit("messageReceived", { status: "Message delivered" });
     });
 
     socket.on("disconnect", () => {

@@ -56,7 +56,7 @@ exports.createChat = async (req, res) => {
       senderId: senderId,
       receiverId: receiverId,
       message: message,
-      photoUrls: photoUrls || [],
+      photoUrls: photoUrls,
     });
     const savedChat = await chat.save();
     const io = req.app.get("io");
