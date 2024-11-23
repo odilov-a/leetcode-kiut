@@ -14,7 +14,8 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                // Clean install to ensure a fresh setup of dependencies
+                sh 'npm ci'
             }
         }
 
@@ -26,6 +27,7 @@ pipeline {
 
         stage('Test') {
             steps {
+                // Run tests and fail the pipeline if tests fail
                 sh 'npm test'
             }
         }
@@ -34,16 +36,18 @@ pipeline {
             steps {
                 sshagent(['server-ssh']) {
                     sh '''
-                    # Copy built files to the project directory on the server
-                    scp -r ./build/* root@79.133.183.21:/root/leetcode-kiut/
+                    # Sync built files to the server directory
+                    rsync -avz --delete ./build/ root@79.133.183.21:/root/leetcode-kiut/
 
-                    # (Optional) Restart services or apply additional commands if needed
+                    # Install production dependencies on the server
                     ssh root@79.133.183.21 "cd /root/leetcode-kiut && npm install --production"
+
+                    # Optional: Restart server or services
+                    ssh root@79.133.183.21 "pm2 reload all || pm2 start server.js"
                     '''
                 }
             }
-}
-
+        }
     }
 
     post {
