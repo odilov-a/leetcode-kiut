@@ -16,7 +16,7 @@ apiApp.use(express.json());
 apiApp.use(cors());
 apiApp.use("/api", routes);
 apiApp.get("/", (req, res) => {
-  return res.json({ message: "API server is running! jenkins" });
+  return res.json({ message: "API server is running!" });
 });
 
 const apiServer = require("http").createServer(apiApp);
