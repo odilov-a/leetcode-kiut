@@ -15,7 +15,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Clean install to ensure a fresh setup of dependencies
-                sh 'npm ci'
+                sh 'npm install'
             }
         }
 

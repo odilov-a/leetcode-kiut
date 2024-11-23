@@ -26,7 +26,6 @@ Thumbs.db
 .dockerignore
 
 # Dependency lock files
-package-lock.json
 yarn.lock
 
 # IDE-specific files
