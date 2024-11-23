@@ -12,6 +12,7 @@ app.use(cors());
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 app.use("/tests", express.static("tests"));
+app.use("/images", express.static("images"));
 app.get("/", (req, res) => {
   return res.json({ message: "CDN server is running!" });
 });

@@ -6,7 +6,6 @@ require("./src/backup.js");
 require("./src/connection.js");
 const routes = require("./src/routes/router.js");
 const ejsRoutes = require("./frontend/routes/ejsRoutes.js");
-const { setupSocket } = require("./src/utils/socket.js");
 
 const API_PORT = 5000;
 const EJS_PORT = 5002;
@@ -20,9 +19,6 @@ apiApp.get("/", (req, res) => {
 });
 
 const apiServer = require("http").createServer(apiApp);
-const io = require("socket.io")(apiServer);
-setupSocket(io);
-apiApp.set("io", io);
 
 function startServerOnPort(server, appName, port) {
   const listen = server.listen(port, () => {

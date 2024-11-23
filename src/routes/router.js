@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const chatRoutes = require("./chat.routes.js");
 const adminRoutes = require("./admin.routes.js");
 const studentRoutes = require("./student.routes.js");
 const subjectRoutes = require("./subject.routes.js");
@@ -13,7 +12,6 @@ const difficultyRoutes = require("./difficulty.routes.js");
 const translationRoutes = require("./translation.routes.js");
 const router = Router();
 
-router.use("/chats", chatRoutes);
 router.use("/admins", adminRoutes);
 router.use("/students", studentRoutes);
 router.use("/problems", problemRoutes);
