@@ -1,12 +1,13 @@
 const setupSocket = (io) => {
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
+
     socket.on("joinPrivateRoom", (senderId, receiverId) => {
       const room = `room_${senderId}_${receiverId}`;
       socket.join(room);
       console.log(`User ${socket.id} joined private room ${room}`);
     });
-    
+
     socket.on("privateChatMessage", (data) => {
       const { senderId, receiverId, message } = data;
       const room = `room_${senderId}_${receiverId}`;
