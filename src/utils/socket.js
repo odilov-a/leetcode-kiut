@@ -1,15 +1,19 @@
 const setupSocket = (io) => {
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
-    socket.on("joinRoom", (room) => {
+    socket.on("joinPrivateRoom", (senderId, receiverId) => {
+      const room = `room_${senderId}_${receiverId}`;
       socket.join(room);
-      console.log(`User ${socket.id} rejoined room ${room}`);
+      console.log(`User ${socket.id} joined private room ${room}`);
     });
-    socket.on("chatMessage", (data) => {
-      const { room, message, sender } = data;
+    
+    socket.on("privateChatMessage", (data) => {
+      const { senderId, receiverId, message } = data;
+      const room = `room_${senderId}_${receiverId}`;
       const timestamp = new Date().toISOString();
-      io.to(room).emit("newMessage", { message, sender, timestamp });
+      io.to(room).emit("newPrivateMessage", { message, senderId, timestamp });
     });
+
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
     });
