@@ -175,10 +175,10 @@ exports.getPereviewById = async (req, res) => {
 exports.updatePereview = async (req, res) => {
   try {
     const pereviewerId = req.userId;
-    const { isCorrect } = req.body;
+    const { isCorrect, comment } = req.body;
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      { isCorrect, isMarked: true, pereviewer: pereviewerId },
+      { isCorrect, isMarked: true, pereviewer: pereviewerId, comment },
       { new: true }
     );
     if (!updatedPereview) {
