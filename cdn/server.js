@@ -12,14 +12,13 @@ app.use(cors());
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 app.use("/tests", express.static("tests"));
-app.use("/images", express.static("images"));
 app.get("/", (req, res) => {
   return res.json({ message: "CDN server is running!" });
 });
 
 function startServerOnPort(port) {
   const listen = app.listen(port, () =>
-    console.log(`Server is running on port ${port}`)
+    console.log(`CDN Server is running on port ${port}`)
   );
   listen.on("error", () => {
     console.log(`Port ${port} is busy. Trying a different port...`);
