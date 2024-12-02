@@ -38,6 +38,7 @@ exports.getAllStudentsHistory = async (req, res) => {
     const attempts = await Attempt.find().populate({
       path: "studentId",
       model: "students",
+      select: "-password -photoUrl -role -createdAt -_id -history",
       strictPopulate: false,
     });
     const result = attempts.reverse();
