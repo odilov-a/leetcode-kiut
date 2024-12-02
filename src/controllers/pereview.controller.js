@@ -34,14 +34,16 @@ const getLanguageField = (lang, type) => {
 exports.getPereviewsStutus = async (req, res) => {
   try {
     const studentId = req.userId;
-    const student = await Student.findById(studentId).populate({
-      path: "pereviewer",
-      strictPopulate: false,
-    });
+    const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    const pereviews = await Pereview.find({ student: studentId });
+    const pereviews = await Pereview.find({ student: studentId }).populate({
+      path: "pereviewer",
+      model: "students",
+      select: "-password -photoUrl -role -createdAt -_id -history",
+      strictPopulate: false,
+    });
     const result = pereviews.map((pereview) => {
       return {
         _id: pereview._id,
