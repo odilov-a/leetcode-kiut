@@ -188,7 +188,6 @@ exports.updatePereview = async (req, res) => {
       {
         isCorrect,
         isMarked: true,
-        isTeacherMarked,
         pereviewer: pereviewerId,
         pereviewerComment,
       },
