@@ -51,6 +51,7 @@ exports.getPereviewsStutus = async (req, res) => {
         isCorrect: pereview.isCorrect,
         isMarked: pereview.isMarked,
         isTeacherMarked: pereview.isTeacherMarked,
+        pereviewer: pereview.pereviewer,
         pereviewerComment: pereview.pereviewerComment,
         teacherComment: pereview.teacherComment,
         createdAt: pereview.createdAt,
