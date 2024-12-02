@@ -182,10 +182,16 @@ exports.getPereviewById = async (req, res) => {
 exports.updatePereview = async (req, res) => {
   try {
     const pereviewerId = req.userId;
-    const { isCorrect, pereviewerComment, teacherComment } = req.body;
+    const { isCorrect, pereviewerComment } = req.body;
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      { isCorrect, isMarked: true, isTeacherMarked, pereviewer: pereviewerId, pereviewerComment, teacherComment },
+      {
+        isCorrect,
+        isMarked: true,
+        isTeacherMarked,
+        pereviewer: pereviewerId,
+        pereviewerComment,
+      },
       { new: true }
     );
     if (!updatedPereview) {
@@ -206,6 +212,23 @@ exports.updatePereview = async (req, res) => {
       }
     }
     return res.status(200).json({ data: updatedPereview });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateIsTeacherMarked = async (req, res) => {
+  try {
+    const { isTeacherMarked, teacherComment } = req.body;
+    const pereview = await Pereview.findByIdAndUpdate(
+      req.params.id,
+      { isTeacherMarked, teacherComment },
+      { new: true }
+    );
+    if (!pereview) {
+      return res.status(404).json({ message: "Pereview not found" });
+    }
+    return res.status(200).json({ data: pereview });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -244,23 +267,6 @@ exports.getPereviewByTeacherId = async (req, res) => {
       };
     });
     return res.status(200).json({ data: result.reverse() });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-exports.updateIsTeacherMarked = async (req, res) => {
-  try {
-    const { isTeacherMarked } = req.body;
-    const pereview = await Pereview.findByIdAndUpdate(
-      req.params.id,
-      { isTeacherMarked },
-      { new: true }
-    );
-    if (!pereview) {
-      return res.status(404).json({ message: "Pereview not found" });
-    }
-    return res.status(200).json({ data: pereview });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
