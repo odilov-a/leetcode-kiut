@@ -5,7 +5,9 @@ const { sign } = require("../utils/jwt.js");
 
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find();
+    const students = await Student.find().select(
+      "balance firstName isActive lastName phoneNumber photoUrl username"
+    );
     return res.json({ data: students });
   } catch (error) {
     return res.status(500).json({
@@ -54,9 +56,7 @@ exports.getAllStudentsHistory = async (req, res) => {
 
 exports.getMeStudent = async (req, res) => {
   try {
-    const student = await Student.findById(req.student.id).populate(
-      "history"
-    );
+    const student = await Student.findById(req.student.id);
     if (!student) {
       return res.status(404).json({
         status: "error",
@@ -114,7 +114,9 @@ exports.getStudentById = async (req, res) => {
 
 exports.getTopStudentsByBalance = async (req, res) => {
   try {
-    const students = await Student.find().sort({ balance: -1 });
+    const students = await Student.find()
+      .sort({ balance: -1 })
+      .select("balance firstName lastName username");
     return res.json({ data: students });
   } catch (error) {
     return res.status(500).json({

@@ -34,7 +34,7 @@ const getLanguageField = (lang, type) => {
 exports.getPereviewsStutus = async (req, res) => {
   try {
     const studentId = req.userId;
-    const student = await Student.findById(studentId);
+    const student = await Student.findById(studentId).populate("pereviews");
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
@@ -236,7 +236,7 @@ exports.getPereviewByTeacherId = async (req, res) => {
         },
       };
     });
-    return res.status(200).json({ data: result });
+    return res.status(200).json({ data: result.reverse() });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
