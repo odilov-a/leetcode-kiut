@@ -40,7 +40,10 @@ const pereviewSchema = new Schema(
       type: String,
       required: true,
     },
-    comment: {
+    pereviewerComment: {
+      type: String,
+    },
+    teacherComment: {
       type: String,
     },
     createdAt: {

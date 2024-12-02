@@ -51,7 +51,8 @@ exports.getPereviewsStutus = async (req, res) => {
         isCorrect: pereview.isCorrect,
         isMarked: pereview.isMarked,
         isTeacherMarked: pereview.isTeacherMarked,
-        pereviewer: pereview.pereviewer,
+        pereviewerComment: pereview.pereviewerComment,
+        teacherComment: pereview.teacherComment,
         createdAt: pereview.createdAt,
       };
     });
@@ -147,7 +148,8 @@ exports.getAllMarkedPereviews = async (req, res) => {
           lastName: student.lastName,
           phoneNumber: student.phoneNumber,
         },
-        pereviewer: pereview.pereviewer,
+        pereviewerComment: pereview.pereviewerComment,
+        teacherComment: pereview.teacherComment,
         isTeacherMarked: pereview.isTeacherMarked,
         projectUrl: pereview.projectUrl,
         isCorrect: pereview.isCorrect,
@@ -180,17 +182,17 @@ exports.getPereviewById = async (req, res) => {
 exports.updatePereview = async (req, res) => {
   try {
     const pereviewerId = req.userId;
-    const { isCorrect, comment } = req.body;
+    const { isCorrect, pereviewerComment, teacherComment } = req.body;
     const updatedPereview = await Pereview.findByIdAndUpdate(
       req.params.id,
-      { isCorrect, isMarked: true, pereviewer: pereviewerId, comment },
+      { isCorrect, isMarked: true, isTeacherMarked, pereviewer: pereviewerId, pereviewerComment, teacherComment },
       { new: true }
     );
     if (!updatedPereview) {
       return res.status(404).json({ message: "Pereview not found" });
     }
     const studentId = updatedPereview.student;
-    if (isCorrect) {
+    if (isTeacherMarked) {
       const project = await Project.findById(updatedPereview.project);
       if (project) {
         await Student.findByIdAndUpdate(studentId, {
