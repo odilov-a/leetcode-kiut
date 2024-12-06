@@ -19,7 +19,7 @@ apiApp.use(express.json());
 apiApp.use(cors());
 apiApp.use("/api", routes);
 apiApp.get("/", (req, res) => {
-  return res.json({ message: "API server is running!" });
+  return res.json({ message: "API server is running! ci" });
 });
 
 const apiServer = require("http").createServer(apiApp);
