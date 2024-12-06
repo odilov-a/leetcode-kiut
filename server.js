@@ -10,6 +10,10 @@ const ejsRoutes = require("./frontend/routes/ejsRoutes.js");
 const API_PORT = 5000;
 const EJS_PORT = 5002;
 
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
+
 const apiApp = express();
 apiApp.use(express.json());
 apiApp.use(cors());

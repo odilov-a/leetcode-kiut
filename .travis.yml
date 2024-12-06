@@ -1,21 +1,34 @@
 language: node_js
 node_js:
-  - "14" # Specify the Node.js version
+  - '16' # Ensure the Node.js version matches your project's requirements
 
-# Install dependencies
-install:
-  - npm install
+services:
+  - mongodb # Since your project likely uses MongoDB
 
-# Run tests
-script:
-  - npm test
-
-# Specify branches to build
-branches:
-  only:
-    - main
-
-# Cache dependencies to speed up builds
 cache:
   directories:
-    - node_modules
+    - node_modules # Cache dependencies for faster builds
+
+before_install:
+  - npm install -g concurrently # Ensure concurrently is available globally
+
+install:
+  - npm install # Install all dependencies
+
+script:
+  - npm run build # Build the project using Webpack
+  - npm test # Run tests (if you have a test script)
+
+branches:
+  only:
+    - main # Monitor builds on the main branch
+
+env:
+  global:
+    - NODE_ENV=test
+    - PORT=5000
+    - TELEGRAM_CHAT_ID=-1002111320578
+    - DATABASE_NAME=leetcode-kiut-project
+    - MONGO_URL=mongodb://127.0.0.1:27017/leetcode-kiut-project
+    - TELEGRAM_TOKEN=7118448601:AAEYTDfe0MexcRFnv5-wiY9UkxPT4T-ELIc
+    - JWT_SECRET=1ka2i3uk4t5p6r7bo8j9ea0c0t9fnr8r7jao6m5oll4e3nse2tu1c1o2dr3e4

@@ -1,5 +1,6 @@
 # Dependency directories
 node_modules/
+.env
 
 # Backups
 backups/
@@ -14,6 +15,7 @@ logs/
 *.sql
 
 # OS and editor generated files
+# IDE-specific files
 .DS_Store
 Thumbs.db
 .vscode/
@@ -29,7 +31,6 @@ Thumbs.db
 package-lock.json
 yarn.lock
 
-# IDE-specific files
 .idea/
 *.iml
 
