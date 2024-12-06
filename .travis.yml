@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - "14" # Specify the Node.js version
+
+# Install dependencies
+install:
+  - npm install
+
+# Run tests
+script:
+  - npm test
+
+# Specify branches to build
+branches:
+  only:
+    - main
+
+# Cache dependencies to speed up builds
+cache:
+  directories:
+    - node_modules
