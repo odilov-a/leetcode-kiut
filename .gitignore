@@ -24,9 +24,6 @@ Thumbs.db
 # Build files
 /dist
 
-# Docker
-.dockerignore
-
 # Dependency lock files
 package-lock.json
 yarn.lock
