@@ -46,6 +46,9 @@ const studentSchema = new Schema(
       default: "student",
       required: true,
     },
+    lastLogin: {
+      type: Date,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

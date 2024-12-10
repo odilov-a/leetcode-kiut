@@ -6,7 +6,7 @@ const { sign } = require("../utils/jwt.js");
 exports.getAllStudents = async (req, res) => {
   try {
     const students = await Student.find().select(
-      "balance firstName isActive lastName phoneNumber photoUrl username"
+      "balance firstName isActive lastName phoneNumber photoUrl username lastLogin"
     );
     return res.json({ data: students });
   } catch (error) {
@@ -186,6 +186,8 @@ exports.loginStudent = async (req, res) => {
         },
       });
     }
+    student.lastLogin = new Date();
+    await student.save();
     const token = sign({
       id: student._id,
       role: student.role,
@@ -198,6 +200,7 @@ exports.loginStudent = async (req, res) => {
         role: student.role,
         username: student.username,
         isActive: student.isActive,
+        lastLogin: student.lastLogin,
       },
     });
   } catch (error) {
