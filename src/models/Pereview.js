@@ -34,6 +34,7 @@ const pereviewSchema = new Schema(
     },
     isTeacherMarked: {
       type: Boolean,
+      default: null,
       required: true,
     },
     projectUrl: {
