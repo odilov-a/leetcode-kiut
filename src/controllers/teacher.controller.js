@@ -29,7 +29,9 @@ exports.getAllTeachers = async (req, res) => {
         },
       });
     }
-    const teachers = await Teacher.find().populate("subject");
+    const teachers = await Teacher.find()
+      .populate("subject")
+      .select("-password -createdAt");
     const result = teachers.map((teacher) => {
       const modifiedSubjects = teacher.subject.map((subject) => {
         return {
