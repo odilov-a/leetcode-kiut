@@ -29,6 +29,12 @@ const AttemptSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    timeLimit: {
+      type: Number,
+    },
+    memoryLimit: {
+      type: Number,
+    },
     failedTestCaseIndex: {
       type: Number,
       default: null,
