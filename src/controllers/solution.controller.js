@@ -235,6 +235,8 @@ exports.checkSolution = async (req, res) => {
         correct: allCorrect,
         balance: student.balance,
         history: student.history,
+        timeLimit,
+        memoryLimit,
       },
     });
   } catch (error) {
