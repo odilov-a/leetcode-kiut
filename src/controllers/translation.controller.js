@@ -13,12 +13,7 @@ exports.getAll = async (req, res) => {
       })),
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -34,12 +29,7 @@ exports.findByLang = async (req, res) => {
     result.push(obj);
     return res.json(result[0]);
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -64,12 +54,7 @@ exports.search = async (req, res) => {
       })),
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -92,12 +77,7 @@ exports.create = async (req, res) => {
       return res.json(findMessage);
     }
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -107,24 +87,12 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const findTranslation = await Translations.findById(id);
     if (!findTranslation) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Tarjima topilmadi",
-          ru: "Перевод не найден",
-          en: "Translation not found",
-        },
-      });
+      return res.status(404).json({ message: "Translation not found" });
     }
     findTranslation[lang] = translation;
     await findTranslation.save();
     return res.json(findTranslation);
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

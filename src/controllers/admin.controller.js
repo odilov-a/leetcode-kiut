@@ -4,69 +4,34 @@ const { sign } = require("../utils/jwt.js");
 
 exports.getAllAdmins = async (req, res) => {
   try {
-    const admins = await Admin.find();
+    const admins = await Admin.find().select("-password");
     return res.json({ data: admins });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.getMeAdmin = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin.id);
+    const admin = await Admin.findById(req.admin.id, "username -_id");
     if (!admin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Админ не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
-    return res.status(200).json({
-      data: {
-        username: admin.username,
-      },
-    });
+    return res.status(200).json({ data: admin });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.getAdminById = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.params.id);
+    const admin = await Admin.findById(req.params.id).select("-password");
     if (!admin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Админ не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
     return res.json({ data: admin });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -82,12 +47,7 @@ exports.registerAdmin = async (req, res) => {
     await admin.save();
     return res.status(201).json({ data: admin });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -96,25 +56,11 @@ exports.loginAdmin = async (req, res) => {
     const { username, password } = req.body;
     const admin = await Admin.findOne({ username });
     if (!admin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Админ не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
     const isPasswordCorrect = await bcrypt.compare(password, admin.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Parol xato",
-          ru: "Неверный пароль",
-          en: "Incorrect password",
-        },
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
     const token = sign({
       id: admin._id,
@@ -130,12 +76,7 @@ exports.loginAdmin = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -153,25 +94,11 @@ exports.meUpdateAdmin = async (req, res) => {
       new: true,
     });
     if (!admin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Администратор не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
     return res.json({ data: admin });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -179,13 +106,7 @@ exports.updateAdmin = async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username) {
-      return res.status(400).json({
-        message: {
-          uz: "Foydalanuvchi nomi kiritilmagan",
-          ru: "Имя пользователя не введено",
-          en: "Username not entered",
-        },
-      });
+      return res.status(400).json({ message: "Username is required" });
     }
     const updateData = { username };
     if (password) {
@@ -198,14 +119,7 @@ exports.updateAdmin = async (req, res) => {
       { new: true }
     );
     if (!updatedAdmin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Админ не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
     return res.json({ message: "Admin updated successfully" });
   } catch (error) {
@@ -217,22 +131,10 @@ exports.deleteAdmin = async (req, res) => {
   try {
     const admin = await Admin.findByIdAndDelete(req.params.id);
     if (!admin) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Admin topilmadi",
-          ru: "Админ не найден",
-          en: "Admin not found",
-        },
-      });
+      return res.status(404).json({ message: "Admin not found" });
     }
     return res.json({ data: admin });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

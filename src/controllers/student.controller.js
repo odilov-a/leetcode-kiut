@@ -10,26 +10,18 @@ exports.getAllStudents = async (req, res) => {
     );
     return res.json({ data: students });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.getAttemptByStudentId = async (req, res) => {
   try {
-    const attempts = await Attempt.find({ studentId: req.params.id });
+    const attempts = await Attempt.find({ studentId: req.params.id }).select(
+      "-password"
+    );
     return res.json({ data: attempts });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -44,14 +36,7 @@ exports.getAllStudentsHistory = async (req, res) => {
     const result = attempts.reverse();
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -59,14 +44,7 @@ exports.getMeStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.student.id);
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     return res.status(200).json({
       data: {
@@ -80,12 +58,7 @@ exports.getMeStudent = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -93,23 +66,11 @@ exports.getStudentById = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     return res.json({ data: student });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -120,12 +81,7 @@ exports.getTopStudentsByBalance = async (req, res) => {
       .select("balance firstName lastName username");
     return res.json({ data: students });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -152,12 +108,7 @@ exports.registerStudent = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -166,25 +117,11 @@ exports.loginStudent = async (req, res) => {
     const { username, password } = req.body;
     const student = await Student.findOne({ username });
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     const isPasswordCorrect = await bcrypt.compare(password, student.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Parol noto'g'ri",
-          ru: "Неверный пароль",
-          en: "Incorrect password",
-        },
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
     student.lastLogin = new Date();
     await student.save();
@@ -204,12 +141,7 @@ exports.loginStudent = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -227,25 +159,11 @@ exports.meUpdateStudent = async (req, res) => {
       new: true,
     });
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     return res.json({ data: student });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -262,25 +180,11 @@ exports.updateStudent = async (req, res) => {
       new: true,
     });
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     return res.json({ data: student });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -288,22 +192,10 @@ exports.deleteStudent = async (req, res) => {
   try {
     const student = await Student.findByIdAndDelete(req.params.id);
     if (!student) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Student topilmadi",
-          ru: "Студент не найден",
-          en: "Student not found",
-        },
-      });
+      return res.status(404).json({ message: "Student not found" });
     }
     return res.json({ data: student });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

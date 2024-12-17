@@ -124,14 +124,7 @@ exports.getAllMarkedPereviews = async (req, res) => {
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const pereviews = await Pereview.find({ isMarked: true })
       .populate("student")

@@ -35,14 +35,7 @@ exports.getAllProblems = async (req, res) => {
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const problems = await Problem.find()
       .populate("subject")
@@ -84,14 +77,7 @@ exports.getAllProblems = async (req, res) => {
     });
     return res.json({ data: result.reverse() });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -101,14 +87,7 @@ exports.getProblemById = async (req, res) => {
       .populate("subject")
       .populate("difficulty");
     if (!problem) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Masala topilmadi",
-          ru: "Задача не найдена",
-          en: "Problem not found",
-        },
-      });
+      return res.status(404).json({ message: "Problem not found" });
     }
     const lang = req.query.lang || "en";
     const titles = {
@@ -152,42 +131,21 @@ exports.getProblemById = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Server xatosi yuz berdi",
-        ru: "Произошла ошибка сервера",
-        en: "Server error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.getAllProblemsByTeacher = async (req, res) => {
   try {
     if (!req.teacher || !req.teacher.id) {
-      return res.status(401).json({
-        status: "error",
-        message: {
-          uz: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-          ru: "Пользователь не аутентифицирован",
-          en: "User not authenticated",
-        },
-      });
+      return res.status(401).json({ message: "User not authenticated" });
     }
     const teacherId = req.teacher.id;
     const { lang } = req.query;
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const problems = await Problem.find({ teacher: teacherId })
       .populate("subject")
@@ -230,14 +188,7 @@ exports.getAllProblemsByTeacher = async (req, res) => {
     });
     return res.json({ data: result.reverse() });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -249,12 +200,7 @@ exports.getAllProblemsByDifficulty = async (req, res) => {
       .populate("difficulty");
     return res.json({ data: problems });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -266,14 +212,7 @@ exports.searchProblems = async (req, res) => {
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const problems = await Problem.find({
       $or: [
@@ -323,14 +262,7 @@ exports.searchProblems = async (req, res) => {
     });
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -342,26 +274,14 @@ exports.getProblemsBySubjectAndDifficulty = async (req, res) => {
       .populate("difficulty");
     return res.json({ data: problems });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.createProblem = async (req, res) => {
   try {
     if ((!req.admin || !req.admin.id) && (!req.teacher || !req.teacher.id)) {
-      return res.status(401).json({
-        status: "error",
-        message: {
-          uz: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-          ru: "Пользователь не аутентифицирован",
-          en: "User not authenticated",
-        },
-      });
+      return res.status(401).json({ message: "User not authenticated" });
     }
     const teacherId = req.teacher ? req.teacher.id : null;
     const adminId = req.admin ? req.admin.id : null;
@@ -373,14 +293,7 @@ exports.createProblem = async (req, res) => {
     await newProblem.save();
     return res.status(201).json({ data: newProblem });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -392,23 +305,11 @@ exports.updateProblem = async (req, res) => {
       { new: true }
     );
     if (!problem) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Masala topilmadi",
-          ru: "Задача не найдена",
-          en: "Problem not found",
-        },
-      });
+      return res.status(404).json({ message: "Problem not found" });
     }
     return res.status(200).json({ data: problem });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -416,22 +317,10 @@ exports.deleteProblem = async (req, res) => {
   try {
     const problem = await Problem.findByIdAndDelete(req.params.id);
     if (!problem) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Masala topilmadi",
-          ru: "Задача не найдена",
-          en: "Problem not found",
-        },
-      });
+      return res.status(404).json({ message: "Problem not found" });
     }
     return res.json({ data: problem });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

@@ -20,14 +20,7 @@ exports.getAllTeachers = async (req, res) => {
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const teachers = await Teacher.find()
       .populate("subject")
@@ -49,14 +42,7 @@ exports.getAllTeachers = async (req, res) => {
     });
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -64,14 +50,7 @@ exports.getMeTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.teacher.id).populate("subject");
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     const lang = req.query.lang || "uz";
     const subjects = teacher.subject.map((sub) => {
@@ -92,14 +71,7 @@ exports.getMeTeacher = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -107,23 +79,11 @@ exports.getTeacherById = async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id).populate("subject");
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     return res.json({ data: teacher });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -150,12 +110,7 @@ exports.registerTeacher = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -164,25 +119,11 @@ exports.loginTeacher = async (req, res) => {
     const { username, password } = req.body;
     const teacher = await Teacher.findOne({ username });
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     const isPasswordCorrect = await bcrypt.compare(password, teacher.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Parol noto'g'ri",
-          ru: "Неверный пароль",
-          en: "Incorrect password",
-        },
-      });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
     const token = sign({
       id: teacher._id,
@@ -198,12 +139,7 @@ exports.loginTeacher = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -221,25 +157,11 @@ exports.meUpdateTeacher = async (req, res) => {
       new: true,
     });
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     return res.json({ data: teacher });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-        ru: error.message,
-        en: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -256,23 +178,11 @@ exports.updateTeacher = async (req, res) => {
       new: true,
     });
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     return res.json({ data: teacher });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -280,22 +190,10 @@ exports.deleteTeacher = async (req, res) => {
   try {
     const teacher = await Teacher.findByIdAndDelete(req.params.id);
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     return res.json({ data: teacher });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

@@ -35,14 +35,7 @@ exports.getAllProjects = async (req, res) => {
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const projects = await Project.find()
       .populate("subject")
@@ -93,14 +86,7 @@ exports.getProjectById = async (req, res) => {
       .populate("subject")
       .populate("difficulty");
     if (!project) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Masala topilmadi",
-          ru: "Задача не найдена",
-          en: "Problem not found",
-        },
-      });
+      return res.status(404).json({ message: "Project not found" });
     }
     const lang = req.query.lang || "en";
     const titles = {
@@ -151,28 +137,14 @@ exports.getProjectById = async (req, res) => {
 exports.getProjectByTeacherId = async (req, res) => {
   try {
     if (!req.teacher || !req.teacher.id) {
-      return res.status(401).json({
-        status: "error",
-        message: {
-          uz: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-          ru: "Пользователь не аутентифицирован",
-          en: "User not authenticated",
-        },
-      });
+      return res.status(401).json({ message: "User not authenticated" });
     }
     const teacherId = req.teacher.id;
     const { lang } = req.query;
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const projects = await Project.find({ teacher: teacherId })
       .populate("subject")
@@ -227,14 +199,7 @@ exports.searchProjects = async (req, res) => {
     const titleFieldName = getLanguageField(lang, "title");
     const descriptionFieldName = getLanguageField(lang, "description");
     if (lang && (!titleFieldName || !descriptionFieldName)) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const projects = await Project.find({
       $or: [
@@ -291,14 +256,7 @@ exports.searchProjects = async (req, res) => {
 exports.createProject = async (req, res) => {
   try {
     if ((!req.admin || !req.admin.id) && (!req.teacher || !req.teacher.id)) {
-      return res.status(401).json({
-        status: "error",
-        message: {
-          uz: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-          ru: "Пользователь не аутентифицирован",
-          en: "User not authenticated",
-        },
-      });
+      return res.status(401).json({ message: "User not authenticated" });
     }
     const teacherId = req.teacher ? req.teacher.id : null;
     const adminId = req.admin ? req.admin.id : null;

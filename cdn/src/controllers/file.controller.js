@@ -3,20 +3,6 @@ const path = require("path");
 const multer = require("multer");
 const mongoose = require("mongoose");
 
-exports.getFiles = async (req, res) => {
-  try {
-    const files = await Files.find();
-    return res.status(200).json({ data: files });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
-  }
-};
-
 exports.upload = async (req, res) => {
   try {
     const publicFolderPath = `./uploads`;
@@ -35,14 +21,7 @@ exports.upload = async (req, res) => {
         return res.status(500).json({ message: error.message });
       }
       if (!req.file) {
-        return res.status(400).json({
-          status: "error",
-          message: {
-            uz: "Fayl yuklanmadi",
-            ru: "Файл не загружен",
-            en: "File not uploaded",
-          },
-        });
+        return res.status(400).json({ message: "File not found" });
       }
       const newFile = new Files({
         fileName: req.file.filename,
@@ -52,11 +31,6 @@ exports.upload = async (req, res) => {
       return res.status(200).json({ data: newFile });
     });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: error.message,
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

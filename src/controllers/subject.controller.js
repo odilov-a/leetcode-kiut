@@ -19,14 +19,7 @@ exports.getAllSubjects = async (req, res) => {
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const subjects = await Subject.find();
     const result = subjects.map((subject) => {
@@ -40,14 +33,7 @@ exports.getAllSubjects = async (req, res) => {
     });
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -56,25 +42,11 @@ exports.getSubjectById = async (req, res) => {
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const subject = await Subject.findById(req.params.id);
     if (!subject) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Fan topilmadi",
-          ru: "Предмет не найден",
-          en: "Subject not found",
-        },
-      });
+      return res.status(404).json({ message: "Subject not found" });
     }
     const result = {
       _id: subject._id,
@@ -85,14 +57,7 @@ exports.getSubjectById = async (req, res) => {
     };
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -101,14 +66,7 @@ exports.getAllSubjectsByTeacher = async (req, res) => {
     const teacherId = req.teacher.id;
     const teacher = await Teacher.findById(teacherId).populate("subject");
     if (!teacher) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "O'qituvchi topilmadi",
-          ru: "Учитель не найден",
-          en: "Teacher not found",
-        },
-      });
+      return res.status(404).json({ message: "Teacher not found" });
     }
     const { lang } = req.query;
     const subjects = teacher.subject;
@@ -128,14 +86,7 @@ exports.getAllSubjectsByTeacher = async (req, res) => {
     });
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -143,26 +94,12 @@ exports.createSubject = async (req, res) => {
   try {
     const { titleUz, titleRu, titleEn } = req.body;
     if (!titleUz || !titleRu || !titleEn) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Barcha maydonlar to'ldirilishi shart",
-          ru: "Все поля должны быть заполнены",
-          en: "All fields are required",
-        },
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
     const subject = await Subject.create({ ...req.body });
     return res.status(201).json({ data: subject });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -174,25 +111,11 @@ exports.updateSubject = async (req, res) => {
       { new: true }
     );
     if (!subject) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Fan topilmadi",
-          ru: "Предмет не найден",
-          en: "Subject not found",
-        },
-      });
+      return res.status(404).json({ message: "Subject not found" });
     }
     return res.status(200).json({ data: subject });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -200,31 +123,10 @@ exports.deleteSubject = async (req, res) => {
   try {
     const subject = await Subject.findByIdAndDelete(req.params.id);
     if (!subject) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Fan topilmadi",
-          ru: "Предмет не найден",
-          en: "Subject not found",
-        },
-      });
+      return res.status(404).json({ message: "Subject not found" });
     }
-    return res.json({
-      status: "success",
-      message: {
-        uz: "Fan o'chirildi",
-        ru: "Предмет удален",
-        en: "Subject deleted",
-      },
-    });
+    return res.json({ data: subject });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };

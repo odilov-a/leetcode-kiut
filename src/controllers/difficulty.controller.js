@@ -18,14 +18,7 @@ exports.getAllDifficulties = async (req, res) => {
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const difficulties = await Difficulty.find();
     const result = difficulties.map((difficulty) => {
@@ -39,14 +32,7 @@ exports.getAllDifficulties = async (req, res) => {
     });
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -55,25 +41,11 @@ exports.getDifficultyById = async (req, res) => {
     const { lang } = req.query;
     const fieldName = getLanguageField(lang);
     if (lang && !fieldName) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Noto'g'ri til so'rovi",
-          ru: "Неверный запрос языка",
-          en: "Invalid language request",
-        },
-      });
+      return res.status(400).json({ message: "Invalid language request" });
     }
     const difficulty = await Difficulty.findById(req.params.id);
     if (!difficulty) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Daraja topilmadi",
-          ru: "Сложность не найдена",
-          en: "Difficulty not found",
-        },
-      });
+      return res.status(404).json({ message: "Difficulty not found" });
     }
     const result = {
       _id: difficulty._id,
@@ -84,14 +56,7 @@ exports.getDifficultyById = async (req, res) => {
     };
     return res.json({ data: result });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -99,26 +64,12 @@ exports.createDifficulty = async (req, res) => {
   try {
     const { titleUz, titleRu, titleEn } = req.body;
     if (!titleUz || !titleRu || !titleEn) {
-      return res.status(400).json({
-        status: "error",
-        message: {
-          uz: "Barcha maydonlar to'ldirilishi shart",
-          ru: "Все поля должны быть заполнены",
-          en: "All fields are required",
-        },
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
     const difficulty = await Difficulty.create({ ...req.body });
     return res.status(201).json({ data: difficulty });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -130,25 +81,11 @@ exports.updateDifficulty = async (req, res) => {
       { new: true }
     );
     if (!difficulty) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Daraja topilmadi",
-          ru: "Сложность не найдена",
-          en: "Difficulty not found",
-        },
-      });
+      return res.status(404).json({ message: "Difficulty not found" });
     }
     return res.json({ data: difficulty });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -156,31 +93,10 @@ exports.deleteDifficulty = async (req, res) => {
   try {
     const difficulty = await Difficulty.findByIdAndDelete(req.params.id);
     if (!difficulty) {
-      return res.status(404).json({
-        status: "error",
-        message: {
-          uz: "Daraja topilmadi",
-          ru: "Сложность не найдена",
-          en: "Difficulty not found",
-        },
-      });
+      return res.status(404).json({ message: "Difficulty not found" });
     }
-    return res.json({
-      status: "success",
-      message: {
-        uz: "Daraja o'chirildi",
-        ru: "Сложность удалена",
-        en: "Difficulty deleted",
-      },
-    });
+    return res.json({ message: "Difficulty deleted successfully" });
   } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: {
-        uz: "Xatolik sodir bo'ldi",
-        ru: "Произошла ошибка",
-        en: "An error occurred",
-      },
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
